@@ -101,7 +101,7 @@ def _apply_gradient(noise_matrix: ndarray, gradient_matrix: ndarray) -> ndarray:
     return resulting_matrix
 
 
-def generate_world(width: int, height: int):
+def generate_map(width: int, height: int) -> ndarray:
     LOG.info(f"Creating new map with dimensions {width}x{height}")
     LOG.info("Generating noise...")
     noise_matrix = _generate_noise(width, height)
@@ -116,6 +116,14 @@ def generate_world(width: int, height: int):
     # If you want to save the map in a compressed form:
     # numpy.savez_compressed("map", map_tiles, fmt='%i')
 
+    return map_tiles
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    size = 1024
+    map_tiles = generate_map(size, size)
+
     rgb_value_matrix = numpy.zeros(map_tiles.shape + (3,))
     for x in range(rgb_value_matrix.shape[0]):
         for y in range(rgb_value_matrix.shape[1]):
@@ -123,9 +131,3 @@ def generate_world(width: int, height: int):
 
     image = Image.fromarray(rgb_value_matrix.astype("uint8"), "RGB")
     image.show()
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    size = 1024
-    generate_world(size, size)
