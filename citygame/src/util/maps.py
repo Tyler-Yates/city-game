@@ -87,6 +87,7 @@ def _calculate_tiles(noise_matrix: ndarray) -> ndarray:
             elif noise_matrix[x][j] > max_height - 0.6:
                 map_tiles[x][j] = MapTile.MOUNTAIN.value
 
+    map_tiles = map_tiles.astype(int)
     return map_tiles
 
 
@@ -111,6 +112,9 @@ def generate_world(width: int, height: int):
     LOG.info("Calculating tiles...")
     map_tiles = _calculate_tiles(gradient_applied_matrix)
     LOG.info("Completed generation")
+
+    # If you want to save the map in a compressed form:
+    # numpy.savez_compressed("map", map_tiles, fmt='%i')
 
     rgb_value_matrix = numpy.zeros(map_tiles.shape + (3,))
     for x in range(rgb_value_matrix.shape[0]):
