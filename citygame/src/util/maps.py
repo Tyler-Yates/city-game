@@ -17,6 +17,7 @@ def _generate_square_gradient(width: int, height: int) -> ndarray:
             gradient_matrix[x][y] = max(abs(x - center_x), abs(y - center_y))
 
     normalized_gradient_matrix = gradient_matrix / numpy.max(gradient_matrix)
+    normalized_gradient_matrix = numpy.square(normalized_gradient_matrix)
 
     # image = Image.fromarray((normalized_gradient_matrix * 255).astype("uint8"), "L")
     # image.show()
@@ -31,7 +32,7 @@ def _generate_noise(width: int, height: int) -> ndarray:
     octaves = int(math.log(width, 2))
     frequency = 0.5
     amplitude = 2.0
-    repeat = 1024
+    repeat = 1048576
     base = random.randint(0, int(repeat / scale))
     print(base)
 
@@ -83,9 +84,9 @@ def add_color(world):
             elif world[i][j] < water_threshold + 0.25:
                 color_world[i][j] = green
 
-            if world[i][j] > max_height - 0.2:
+            if world[i][j] > max_height - 0.3:
                 color_world[i][j] = snow
-            elif world[i][j] > max_height - 0.5:
+            elif world[i][j] > max_height - 0.6:
                 color_world[i][j] = mountain
 
     return color_world
