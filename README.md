@@ -2,6 +2,10 @@
 
 City building game built using PyGame.
 
+
+[![codecov](https://codecov.io/gh/Tyler-Yates/city-game/branch/master/graph/badge.svg?token=NXE3SZWRQE)](https://codecov.io/gh/Tyler-Yates/city-game)
+[![tox](https://github.com/Tyler-Yates/city-game/actions/workflows/tox-workflow.yml/badge.svg)](https://github.com/Tyler-Yates/city-game/actions/workflows/tox-workflow.yml)
+
 ## Setup
 
 ### Python
