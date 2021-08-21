@@ -6,6 +6,24 @@ from PIL import Image
 from numpy.core.records import ndarray
 
 
+def _generate_square_gradient(width: int, height: int) -> ndarray:
+    center_x = width // 2
+    center_y = height // 2
+    gradient_matrix = numpy.zeros((width, height))
+
+    for x in range(width):
+        for y in range(height):
+            gradient_matrix[x][y] = max(abs(x - center_x), abs(y - center_y))
+
+    normalized_gradient_matrix = gradient_matrix / numpy.max(gradient_matrix)
+    print(normalized_gradient_matrix)
+
+    image = Image.fromarray((normalized_gradient_matrix * 255).astype("uint8"), "L")
+    image.show()
+
+    return normalized_gradient_matrix
+
+
 def _generate_noise(width: int, height: int) -> ndarray:
     noise_matrix = numpy.zeros((width, height))
 
@@ -79,4 +97,4 @@ def generate_world(width: int, height: int):
 
 
 if __name__ == "__main__":
-    generate_world(1024, 1024)
+    _generate_square_gradient(1024, 1024)
