@@ -1,3 +1,4 @@
+import logging
 import math
 import random
 
@@ -5,6 +6,8 @@ import noise
 import numpy
 from PIL import Image
 from numpy.core.records import ndarray
+
+LOG = logging.getLogger("maps")
 
 
 def _generate_square_gradient(width: int, height: int) -> ndarray:
@@ -33,12 +36,12 @@ def _generate_noise(width: int, height: int) -> ndarray:
     frequency = 0.5
     amplitude = 2.0
     repeat = 1048576
+
     base = random.randint(0, int(repeat / scale))
-    print(base)
+    LOG.info(f"Map seed: {base}")
 
     for x in range(width):
         for y in range(height):
-
             noise_matrix[x][y] = noise._simplex.noise2(
                 x / scale,
                 y / scale,
@@ -56,7 +59,7 @@ def _generate_noise(width: int, height: int) -> ndarray:
     return normalized_noise_matrix
 
 
-def add_color(world):
+def _calculate_tiles(noise_matrix: ndarray) -> ndarray:
     deep_water = [0, 62, 173]
     shallow_water = [9, 82, 200]
     green = [34, 139, 34]
@@ -66,30 +69,30 @@ def add_color(world):
     mountain = [139, 137, 137]
 
     water_threshold = -0.9
-    max_height = numpy.max(world)
+    max_height = numpy.max(noise_matrix)
 
-    color_world = numpy.zeros(world.shape + (3,))
-    for i in range(world.shape[0]):
-        for j in range(world.shape[1]):
+    tile_matrix = numpy.zeros(noise_matrix.shape + (3,))
+    for i in range(noise_matrix.shape[0]):
+        for j in range(noise_matrix.shape[1]):
 
             # Default type
-            color_world[i][j] = darkgreen
+            tile_matrix[i][j] = darkgreen
 
-            if world[i][j] < water_threshold - 0.25:
-                color_world[i][j] = deep_water
-            elif world[i][j] < water_threshold:
-                color_world[i][j] = shallow_water
-            elif world[i][j] < water_threshold + 0.05:
-                color_world[i][j] = beach
-            elif world[i][j] < water_threshold + 0.25:
-                color_world[i][j] = green
+            if noise_matrix[i][j] < water_threshold - 0.25:
+                tile_matrix[i][j] = deep_water
+            elif noise_matrix[i][j] < water_threshold:
+                tile_matrix[i][j] = shallow_water
+            elif noise_matrix[i][j] < water_threshold + 0.05:
+                tile_matrix[i][j] = beach
+            elif noise_matrix[i][j] < water_threshold + 0.25:
+                tile_matrix[i][j] = green
 
-            if world[i][j] > max_height - 0.3:
-                color_world[i][j] = snow
-            elif world[i][j] > max_height - 0.6:
-                color_world[i][j] = mountain
+            if noise_matrix[i][j] > max_height - 0.3:
+                tile_matrix[i][j] = snow
+            elif noise_matrix[i][j] > max_height - 0.6:
+                tile_matrix[i][j] = mountain
 
-    return color_world
+    return tile_matrix
 
 
 def _apply_gradient(noise_matrix: ndarray, gradient_matrix: ndarray) -> ndarray:
@@ -103,17 +106,22 @@ def _apply_gradient(noise_matrix: ndarray, gradient_matrix: ndarray) -> ndarray:
 
 
 def generate_world(width: int, height: int):
+    LOG.info(f"Creating new map with dimensions {width}x{height}")
+    LOG.info("Generating noise...")
     noise_matrix = _generate_noise(width, height)
+    LOG.info("Generating gradient...")
     square_gradient_matrix = _generate_square_gradient(width, height)
-
+    LOG.info("Applying gradient...")
     gradient_applied_matrix = _apply_gradient(noise_matrix, square_gradient_matrix)
-
-    color_world = add_color(gradient_applied_matrix)
+    LOG.info("Calculating tiles...")
+    color_world = _calculate_tiles(gradient_applied_matrix)
+    LOG.info("Completed generation")
 
     image = Image.fromarray(color_world.astype("uint8"), "RGB")
     image.show()
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     size = 1024
     generate_world(size, size)
