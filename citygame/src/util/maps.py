@@ -7,6 +7,8 @@ import numpy
 from PIL import Image
 from numpy.core.records import ndarray
 
+from citygame.src.util.map_tile import MapTile
+
 LOG = logging.getLogger("maps")
 
 
@@ -60,39 +62,32 @@ def _generate_noise(width: int, height: int) -> ndarray:
 
 
 def _calculate_tiles(noise_matrix: ndarray) -> ndarray:
-    deep_water = [0, 62, 173]
-    shallow_water = [9, 82, 200]
-    green = [34, 139, 34]
-    darkgreen = [0, 100, 0]
-    beach = [238, 214, 175]
-    snow = [255, 250, 250]
-    mountain = [139, 137, 137]
-
     water_threshold = -0.9
     max_height = numpy.max(noise_matrix)
 
-    tile_matrix = numpy.zeros(noise_matrix.shape + (3,))
-    for i in range(noise_matrix.shape[0]):
+    map_tiles = numpy.zeros(noise_matrix.shape)
+
+    for x in range(noise_matrix.shape[0]):
         for j in range(noise_matrix.shape[1]):
 
             # Default type
-            tile_matrix[i][j] = darkgreen
+            map_tiles[x][j] = MapTile.FOREST.value
 
-            if noise_matrix[i][j] < water_threshold - 0.25:
-                tile_matrix[i][j] = deep_water
-            elif noise_matrix[i][j] < water_threshold:
-                tile_matrix[i][j] = shallow_water
-            elif noise_matrix[i][j] < water_threshold + 0.05:
-                tile_matrix[i][j] = beach
-            elif noise_matrix[i][j] < water_threshold + 0.25:
-                tile_matrix[i][j] = green
+            if noise_matrix[x][j] < water_threshold - 0.25:
+                map_tiles[x][j] = MapTile.DEEP_WATER.value
+            elif noise_matrix[x][j] < water_threshold:
+                map_tiles[x][j] = MapTile.SHALLOW_WATER.value
+            elif noise_matrix[x][j] < water_threshold + 0.05:
+                map_tiles[x][j] = MapTile.BEACH.value
+            elif noise_matrix[x][j] < water_threshold + 0.25:
+                map_tiles[x][j] = MapTile.GRASSLAND.value
 
-            if noise_matrix[i][j] > max_height - 0.3:
-                tile_matrix[i][j] = snow
-            elif noise_matrix[i][j] > max_height - 0.6:
-                tile_matrix[i][j] = mountain
+            if noise_matrix[x][j] > max_height - 0.3:
+                map_tiles[x][j] = MapTile.SNOW.value
+            elif noise_matrix[x][j] > max_height - 0.6:
+                map_tiles[x][j] = MapTile.MOUNTAIN.value
 
-    return tile_matrix
+    return map_tiles
 
 
 def _apply_gradient(noise_matrix: ndarray, gradient_matrix: ndarray) -> ndarray:
@@ -114,10 +109,15 @@ def generate_world(width: int, height: int):
     LOG.info("Applying gradient...")
     gradient_applied_matrix = _apply_gradient(noise_matrix, square_gradient_matrix)
     LOG.info("Calculating tiles...")
-    color_world = _calculate_tiles(gradient_applied_matrix)
+    map_tiles = _calculate_tiles(gradient_applied_matrix)
     LOG.info("Completed generation")
 
-    image = Image.fromarray(color_world.astype("uint8"), "RGB")
+    rgb_value_matrix = numpy.zeros(map_tiles.shape + (3,))
+    for x in range(rgb_value_matrix.shape[0]):
+        for y in range(rgb_value_matrix.shape[1]):
+            rgb_value_matrix[x][y] = MapTile.get_rgb_value(map_tiles[x][y])
+
+    image = Image.fromarray(rgb_value_matrix.astype("uint8"), "RGB")
     image.show()
 
 
