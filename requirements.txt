@@ -1,2 +1,7 @@
 pygame
 Shapely
+perlin-noise
+numpy
+noise
+scipy
+Pillow
