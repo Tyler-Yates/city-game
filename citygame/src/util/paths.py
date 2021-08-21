@@ -3,7 +3,7 @@ import os.path
 import pathlib
 import sys
 
-from mygame.src.constants.game_constants import SAVE_FOLDER_NAME
+from citygame.src.constants.game_constants import SAVE_FOLDER_NAME
 
 LOG = logging.getLogger("PathsUtil")
 

@@ -4,12 +4,12 @@ import pygame
 from pygame.event import Event
 from pygame.surface import Surface
 
-from mygame.src.interfaces.overlay import Overlay
-from mygame.src.state.game_state import GameState
-from mygame.src.util.fonts import BASIC_FONT
+from citygame.src.interfaces.overlay import Overlay
+from citygame.src.state.game_state import GameState
+from citygame.src.util.fonts import BASIC_FONT
 
 if TYPE_CHECKING:
-    from mygame.src.controllers.scene_controller import SceneController
+    from citygame.src.controllers.scene_controller import SceneController
 
 TOGGLE_HOTKEY = pygame.K_F12
 

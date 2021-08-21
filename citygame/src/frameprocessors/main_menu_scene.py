@@ -4,13 +4,13 @@ import pygame
 from pygame import Surface
 from pygame.event import Event
 
-from mygame.src.constants.scene_enum import SceneEnum
-from mygame.src.interfaces.scene import Scene
-from mygame.src.state.game_state import GameState
-from mygame.src.util.fonts import BASIC_FONT
+from citygame.src.constants.scene_enum import SceneEnum
+from citygame.src.interfaces.scene import Scene
+from citygame.src.state.game_state import GameState
+from citygame.src.util.fonts import BASIC_FONT
 
 if TYPE_CHECKING:
-    from mygame.src.controllers.scene_controller import SceneController
+    from citygame.src.controllers.scene_controller import SceneController
 
 MAIN_MENU_BACKGROUND_COLOR = (200, 200, 200)
 

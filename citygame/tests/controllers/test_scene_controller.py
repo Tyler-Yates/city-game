@@ -1,9 +1,9 @@
 import pytest as pytest
 
-from mygame.src.constants.scene_enum import SceneEnum
-from mygame.src.controllers.scene_controller import SceneController
-from mygame.src.interfaces.scene import Scene
-from mygame.src.state.game_state import GameState
+from citygame.src.constants.scene_enum import SceneEnum
+from citygame.src.controllers.scene_controller import SceneController
+from citygame.src.interfaces.scene import Scene
+from citygame.src.state.game_state import GameState
 
 
 class TestSceneController:

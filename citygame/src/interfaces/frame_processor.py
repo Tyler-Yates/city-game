@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 from pygame.surface import Surface
 
-from mygame.src.state.game_state import GameState
+from citygame.src.state.game_state import GameState
 
 if TYPE_CHECKING:
-    from mygame.src.controllers.scene_controller import SceneController
+    from citygame.src.controllers.scene_controller import SceneController
 
 
 class FrameProcessor(ABC):

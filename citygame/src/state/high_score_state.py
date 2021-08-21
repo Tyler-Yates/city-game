@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import List
 
-from mygame.src.util.paths import get_save_file_directory
+from citygame.src.util.paths import get_save_file_directory
 
 MAXIMUM_NUMBER_OF_HIGH_SCORES = 10
 

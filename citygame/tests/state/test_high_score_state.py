@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from mygame.src.state.high_score_state import HighScoreState
-from mygame.src.util.paths import get_save_file_directory
+from citygame.src.state.high_score_state import HighScoreState
+from citygame.src.util.paths import get_save_file_directory
 
 TEST_SAVE_FILE_NAME = "test_save.json"
 

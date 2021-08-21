@@ -6,7 +6,7 @@ import pygame
 import pygame.gfxdraw
 from pygame.surface import Surface
 
-from mygame.src.constants.game_constants import (
+from citygame.src.constants.game_constants import (
     GAME_WIDTH_PX,
     MAXIMUM_ASTEROID_SIZE,
     MINIMUM_ASTEROID_SIZE,
@@ -14,8 +14,8 @@ from mygame.src.constants.game_constants import (
     MINIMUM_ASTEROID_VERTICES,
     ASTEROID_VARIANCE,
 )
-from mygame.src.interfaces.actor import Actor
-from mygame.src.util.polygons import generate_polygon
+from citygame.src.interfaces.actor import Actor
+from citygame.src.util.polygons import generate_polygon
 
 BASE_SPEED = 200
 

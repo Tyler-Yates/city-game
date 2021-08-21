@@ -1,11 +1,11 @@
 from abc import ABC
 from typing import TYPE_CHECKING
 
-from mygame.src.interfaces.frame_processor import FrameProcessor
-from mygame.src.state.game_state import GameState
+from citygame.src.interfaces.frame_processor import FrameProcessor
+from citygame.src.state.game_state import GameState
 
 if TYPE_CHECKING:
-    from mygame.src.controllers.scene_controller import SceneController
+    from citygame.src.controllers.scene_controller import SceneController
 
 
 class Scene(FrameProcessor, ABC):

@@ -1,6 +1,6 @@
 import pytest
 
-from mygame.src.util.polygons import collides, generate_polygon
+from citygame.src.util.polygons import collides, generate_polygon
 
 
 class TestCollisions:

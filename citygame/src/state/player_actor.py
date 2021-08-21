@@ -4,8 +4,8 @@ import pygame
 from pygame import Surface
 from pygame.event import Event
 
-from mygame.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
-from mygame.src.interfaces.actor import Actor
+from citygame.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
+from citygame.src.interfaces.actor import Actor
 
 PLAYER_SIZE = 20
 PLAYER_OFFSET_FROM_BOTTOM = 10

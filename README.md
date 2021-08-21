@@ -29,7 +29,7 @@ Before running the application, ensure you have sourced the virtual environment 
 
 From the root of the repo, run the following command to start the game:
 ```bash
-python3 -m mygame
+python3 -m citygame
 ```
 
 ## Development

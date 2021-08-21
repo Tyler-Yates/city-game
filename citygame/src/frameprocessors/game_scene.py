@@ -5,16 +5,16 @@ from typing import List, TYPE_CHECKING
 from pygame import Surface
 from pygame.event import Event
 
-from mygame.src.constants.game_constants import MAXIMUM_ASTEROID_SIZE
-from mygame.src.constants.scene_enum import SceneEnum
-from mygame.src.interfaces.scene import Scene
-from mygame.src.state.asteroid_actor import Asteroid
-from mygame.src.state.game_state import GameState
-from mygame.src.util.fonts import BASIC_FONT, render_with_outline
-from mygame.src.util.polygons import collides
+from citygame.src.constants.game_constants import MAXIMUM_ASTEROID_SIZE
+from citygame.src.constants.scene_enum import SceneEnum
+from citygame.src.interfaces.scene import Scene
+from citygame.src.state.asteroid_actor import Asteroid
+from citygame.src.state.game_state import GameState
+from citygame.src.util.fonts import BASIC_FONT, render_with_outline
+from citygame.src.util.polygons import collides
 
 if TYPE_CHECKING:
-    from mygame.src.controllers.scene_controller import SceneController
+    from citygame.src.controllers.scene_controller import SceneController
 
 BACKGROUND_COLOR = (50, 50, 50)
 

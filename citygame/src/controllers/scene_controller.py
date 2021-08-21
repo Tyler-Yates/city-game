@@ -1,9 +1,9 @@
-from mygame.src.constants.scene_enum import SceneEnum
-from mygame.src.frameprocessors.game_over_scene import GameOverScene
-from mygame.src.frameprocessors.game_scene import GameScene
-from mygame.src.frameprocessors.main_menu_scene import MainMenuScene
-from mygame.src.interfaces.scene import Scene
-from mygame.src.state.game_state import GameState
+from citygame.src.constants.scene_enum import SceneEnum
+from citygame.src.frameprocessors.game_over_scene import GameOverScene
+from citygame.src.frameprocessors.game_scene import GameScene
+from citygame.src.frameprocessors.main_menu_scene import MainMenuScene
+from citygame.src.interfaces.scene import Scene
+from citygame.src.state.game_state import GameState
 
 
 class SceneController:

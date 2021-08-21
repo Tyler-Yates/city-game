@@ -1,8 +1,8 @@
 from typing import List
 
-from mygame.src.state.asteroid_actor import Asteroid
-from mygame.src.state.high_score_state import HighScoreState
-from mygame.src.state.player_actor import Player
+from citygame.src.state.asteroid_actor import Asteroid
+from citygame.src.state.high_score_state import HighScoreState
+from citygame.src.state.player_actor import Player
 
 
 class GameState:
