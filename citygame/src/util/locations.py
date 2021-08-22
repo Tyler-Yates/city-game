@@ -72,26 +72,35 @@ def place_locations(map_tiles: ndarray) -> ndarray:
     closest_valid_starting_point = _find_closest_valid_position(starting_point, map_tiles)
     locations = [closest_valid_starting_point]
 
+    # Some locations may be in a place where no further locations can be added from.
+    # Those locations should no longer be used as seeds to generate new locations.
+    seed_locations = {closest_valid_starting_point}
+
+    # Constants to use when placing locations
     distance_to_new_city = 50
     minimum_distance_between_cities = 30
     max_angle_iterations = 360
     angle_increment = 2.0 * math.pi / max_angle_iterations
 
-    num_cities = 100
-    for i in range(num_cities):
-        location = random.choice(locations)
+    while len(seed_locations) > 0:
+        seed_location = random.choice(tuple(seed_locations))
 
+        placed_new_location = False
         angle = 2.0 * math.pi * random.random()
         for k in range(max_angle_iterations):
             angle = (angle + angle_increment) % (2.0 * math.pi)
-            new_location_x = int(location[0] + math.cos(angle) * distance_to_new_city)
-            new_location_y = int(location[1] - math.sin(angle) * distance_to_new_city)
+            new_location_x = int(seed_location[0] + math.cos(angle) * distance_to_new_city)
+            new_location_y = int(seed_location[1] - math.sin(angle) * distance_to_new_city)
             new_location = (new_location_x, new_location_y)
 
             if _location_is_valid(new_location, locations, map_tiles, minimum_distance_between_cities):
-                print(f"Angle {angle} - Staring location {location} - New location {new_location}")
                 locations.append(new_location)
+                seed_locations.add(new_location)
+                placed_new_location = True
                 break
+
+        if not placed_new_location:
+            seed_locations.remove(seed_location)
 
     for location in locations:
         map_tiles_with_cities[location[0]][location[1]] = 99
