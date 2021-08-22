@@ -29,3 +29,5 @@ class MapTile(Enum):
             return [139, 137, 137]
         elif tile == MapTile.SNOW.value:
             return [255, 250, 250]
+        else:
+            return [255, 0, 0]
