@@ -24,6 +24,20 @@ def _location_is_too_close_to_existing_locations(new_location, existing_location
     return False
 
 
+def _location_is_on_valid_tile(location, map_tiles: ndarray) -> bool:
+    return MapTile.is_buildable_tile(map_tiles[location[0]][location[1]])
+
+
+def _location_is_valid(
+    location, existing_locations, map_tiles: ndarray, minimum_distance_between_locations: int
+) -> bool:
+    return _location_is_on_valid_tile(location, map_tiles) and (
+        not _location_is_too_close_to_existing_locations(
+            location, existing_locations, minimum_distance_between_locations
+        )
+    )
+
+
 def place_locations(map_tiles: ndarray) -> ndarray:
     map_tiles_with_cities = numpy.matrix.copy(map_tiles)
 
@@ -41,9 +55,7 @@ def place_locations(map_tiles: ndarray) -> ndarray:
             new_location_y = int(location[1] + math.sin(angle) * distance_between_cities)
             new_location = (new_location_x, new_location_y)
 
-            if _location_is_too_close_to_existing_locations(new_location, locations, distance_between_cities):
-                continue
-            else:
+            if _location_is_valid(new_location, locations, map_tiles, distance_between_cities):
                 locations.append(new_location)
 
     for location in locations:

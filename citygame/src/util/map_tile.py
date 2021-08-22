@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import List
+from typing import List, Union
 
 
 class MapTile(Enum):
@@ -12,7 +12,7 @@ class MapTile(Enum):
     SNOW = auto()
 
     @staticmethod
-    def get_rgb_value(tile) -> List[int]:
+    def get_rgb_value(tile: Union[int, float]) -> List[int]:
         tile = int(tile)
 
         if tile == MapTile.DEEP_WATER.value:
@@ -31,3 +31,24 @@ class MapTile(Enum):
             return [255, 250, 250]
         else:
             return [255, 0, 0]
+
+    @staticmethod
+    def is_buildable_tile(tile: Union[int, float]) -> bool:
+        tile = int(tile)
+
+        if tile == MapTile.DEEP_WATER.value:
+            return False
+        elif tile == MapTile.SHALLOW_WATER.value:
+            return False
+        elif tile == MapTile.BEACH.value:
+            return False
+        elif tile == MapTile.GRASSLAND.value:
+            return True
+        elif tile == MapTile.FOREST.value:
+            return True
+        elif tile == MapTile.MOUNTAIN.value:
+            return False
+        elif tile == MapTile.SNOW.value:
+            return False
+        else:
+            return False
