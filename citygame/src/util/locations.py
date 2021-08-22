@@ -16,7 +16,7 @@ def _find_closest_valid_position(starting_location, map_tiles) -> tuple[int, int
     lx = starting_location[0]
     ly = starting_location[1]
 
-    for i in range(1, map_tiles.shape[0] // 2):
+    for i in range(1, map_tiles.shape[0] // 2 - 2):
         # Upper and lower row
         for x in range(lx - i, lx + i + 1):
             location = (x, ly - i)
@@ -60,6 +60,12 @@ def _location_is_on_valid_tile(location, map_tiles: ndarray) -> bool:
 def _location_is_valid(
     location, existing_locations, map_tiles: ndarray, minimum_distance_between_locations: int
 ) -> bool:
+    # Do not check locations outside of the map
+    if location[0] < 0 or location[0] >= map_tiles.shape[0]:
+        return False
+    if location[1] < 0 or location[1] >= map_tiles.shape[1]:
+        return False
+
     tile_valid = _location_is_on_valid_tile(location, map_tiles)
     distance_valid = not _location_is_too_close_to_existing_locations(
         location, existing_locations, minimum_distance_between_locations
