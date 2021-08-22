@@ -9,6 +9,32 @@ from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
 
 
+def _find_closest_valid_position(starting_location, map_tiles) -> tuple[int, int]:
+    lx = starting_location[0]
+    ly = starting_location[1]
+
+    for i in range(1, map_tiles.shape[0] // 2):
+        # Upper and lower row
+        for x in range(lx - i, lx + i + 1):
+            location = (x, ly - i)
+            if _location_is_on_valid_tile(location, map_tiles):
+                return location
+
+            location = (x, ly + i)
+            if _location_is_on_valid_tile(location, map_tiles):
+                return location
+
+        # Left and right columns
+        for y in range(ly - i + 1, ly + i):
+            location = (lx - i, y)
+            if _location_is_on_valid_tile(location, map_tiles):
+                return location
+
+            location = (lx + i, y)
+            if _location_is_on_valid_tile(location, map_tiles):
+                return location
+
+
 def _location_is_too_close_to_existing_locations(new_location, existing_locations, minimum_distance: int) -> bool:
     x1 = new_location[0]
     y1 = new_location[1]
@@ -41,8 +67,10 @@ def _location_is_valid(
 def place_locations(map_tiles: ndarray) -> ndarray:
     map_tiles_with_cities = numpy.matrix.copy(map_tiles)
 
-    # Add an initial seed location at the center of the map
-    locations = [(map_tiles.shape[0] // 2, map_tiles.shape[1] // 2)]
+    # Add an initial seed location close to the center of the map
+    starting_point = (map_tiles.shape[0] // 2, map_tiles.shape[1] // 2)
+    closest_valid_starting_point = _find_closest_valid_position(starting_point, map_tiles)
+    locations = [closest_valid_starting_point]
 
     distance_between_cities = 50
 
