@@ -27,11 +27,17 @@ class LocationActor(Actor):
         pass
 
     def render(self, screen: Surface):
-        for neighbor in self.neighbors:
-            gfxdraw.line(screen, self.x, self.y, neighbor.x, neighbor.y, Color("red"))
-
         gfxdraw.filled_circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, Color("red"))
         gfxdraw.circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, Color("yellow"))
 
     def set_neighbors(self, neighbors: List['LocationActor']):
         self.neighbors = neighbors
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return (self.x == other.x) and (self.y == other.y)
+        else:
+            return False
+
+    def __hash__(self):
+        return hash((self.x, self.y))

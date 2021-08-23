@@ -11,6 +11,9 @@ from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
 
 
+NEIGHBOR_LINE_COLOR = [25, 25, 25, 50]
+
+
 class WorldState:
     """
     Representation of a world.
@@ -56,13 +59,25 @@ class WorldState:
                 tile_color = MapTile.get_rgb_value(self.map_tiles[x][y])
                 pygame.draw.line(self.map_surface, tile_color, [x, y], [x, y])
 
+        # Save the neighbor lines so we don't have to calculate them each frame
+        self.neighbor_lines = set()
+        for location in self.locations:
+            for neighbor in location.neighbors:
+                sorted_point_list = sorted([(location.x, location.y), (neighbor.x, neighbor.y)])
+                self.neighbor_lines.add((sorted_point_list[0], sorted_point_list[1]))
+
     def get_locations(self) -> List[LocationActor]:
         return self.locations
 
     def render(self, screen: Surface):
         screen.blit(self.map_surface, (0, 0))
 
+        # Draw the neighboring location lines first so the location bubbles will be drawn over them
+        for neighbor_line in self.neighbor_lines:
+            point1 = neighbor_line[0]
+            point2 = neighbor_line[1]
+            pygame.draw.aaline(screen, NEIGHBOR_LINE_COLOR, [point1[0], point1[1]], [point2[0], point2[1]])
+
         # Draw each location
-        # TODO figure out how to draw the line between each neighboring location only once
         for location in self.get_locations():
             location.render(screen)
