@@ -74,6 +74,8 @@ def _location_is_valid(
 
 
 def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
+    LOG.info("Generating locations...")
+
     # Add an initial seed location close to the center of the map.
     starting_point = (map_tiles.shape[0] // 2, map_tiles.shape[1] // 2)
     closest_valid_starting_point = _find_closest_valid_position(starting_point, map_tiles)

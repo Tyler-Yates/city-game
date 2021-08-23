@@ -1,8 +1,4 @@
-from typing import List
-
-from citygame.src.state.asteroid_actor import Asteroid
-from citygame.src.state.high_score_state import HighScoreState
-from citygame.src.state.player_actor import Player
+from citygame.src.state.world_state import WorldState
 
 
 class GameState:
@@ -11,20 +7,10 @@ class GameState:
     """
 
     def __init__(self):
-        self.score = 0
-
-        self.player = Player()
-        self.asteroids: List[Asteroid] = []
-
-        self.high_scores = HighScoreState()
+        self.world: WorldState = None
 
     def reset(self):
         """
         Method to be called whenever the game state should be reset, for example starting a new game.
         """
-        self.score = 0
-
-        self.player = Player()
-        self.asteroids: List[Asteroid] = []
-
-        # We do not need to reset the high scores as that is persistent
+        self.world = WorldState()

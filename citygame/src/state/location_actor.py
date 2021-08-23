@@ -1,10 +1,9 @@
-import pygame.draw
+from pygame import gfxdraw, Color
 from pygame.surface import Surface
 
 from citygame.src.interfaces.actor import Actor
 
-
-LOCATION_CIRCLE_RADIUS = 5.0
+LOCATION_CIRCLE_RADIUS = 5
 
 
 class LocationActor(Actor):
@@ -24,5 +23,5 @@ class LocationActor(Actor):
         pass
 
     def render(self, screen: Surface):
-        pygame.draw.circle(screen, 'red', [self.x, self.y], LOCATION_CIRCLE_RADIUS)
-        pygame.draw.circle(screen, 'yellow', [self.x, self.y], LOCATION_CIRCLE_RADIUS, width=1)
+        gfxdraw.filled_circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, Color("red"))
+        gfxdraw.circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, Color("yellow"))
