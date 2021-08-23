@@ -34,6 +34,3 @@ class GameScene(Scene):
         screen.fill(BACKGROUND_COLOR)
 
         self.game_state.world.render(screen)
-
-        for location in self.game_state.world.get_locations():
-            location.render(screen)

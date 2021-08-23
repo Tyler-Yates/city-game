@@ -6,6 +6,7 @@ import numpy
 from PIL import Image
 from numpy import ndarray
 
+from citygame.src.constants.world_constants import DISTANCE_BETWEEN_LOCATIONS, MINIMUM_DISTANCE_BETWEEN_LOCATIONS
 from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
 
@@ -86,8 +87,6 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
     seed_locations = {closest_valid_starting_point}
 
     # Constants to use when placing locations
-    distance_to_new_city = 50
-    minimum_distance_between_cities = 30
     max_angle_iterations = 360
     angle_increment = 2.0 * math.pi / max_angle_iterations
 
@@ -104,11 +103,11 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
         placed_new_location = False
         for k in range(max_angle_iterations):
             angle = (angle + angle_increment) % (2.0 * math.pi)
-            new_location_x = int(seed_x + math.cos(angle) * distance_to_new_city)
-            new_location_y = int(seed_y - math.sin(angle) * distance_to_new_city)
+            new_location_x = int(seed_x + math.cos(angle) * DISTANCE_BETWEEN_LOCATIONS)
+            new_location_y = int(seed_y - math.sin(angle) * DISTANCE_BETWEEN_LOCATIONS)
             new_location = (new_location_x, new_location_y)
 
-            if _location_is_valid(new_location, locations, map_tiles, minimum_distance_between_cities):
+            if _location_is_valid(new_location, locations, map_tiles, MINIMUM_DISTANCE_BETWEEN_LOCATIONS):
                 locations.append(new_location)
                 seed_locations.add(new_location)
                 placed_new_location = True
