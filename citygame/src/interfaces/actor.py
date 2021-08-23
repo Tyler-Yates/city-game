@@ -12,15 +12,6 @@ class Actor(ABC):
     def __init__(self):
         pass
 
-    def get_collision_polygon(self) -> List[List[float]]:
-        """
-        Called in order to check for collisions.
-
-        Returns:
-            The collision Polygon
-        """
-        raise NotImplementedError("Subclass must implement.")
-
     def process_input(self, events):
         """
         Called every frame by the game director.
