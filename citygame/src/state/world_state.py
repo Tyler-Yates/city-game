@@ -113,20 +113,12 @@ class WorldState:
             # Now set the neighbors
             current_location.set_neighbors(current_neighbors)
 
-        progress_bar.set_progress(0.7, "Saving map image...")
+        progress_bar.set_progress(0.8, "Saving map image...")
         # Create a map surface so that we can simply draw the surface each frame instead of each tile
         self.map_surface = Surface((map_size, map_size))
         for x in range(self.map_size):
             for y in range(self.map_size):
                 tile_color = MapTile.get_rgb_value(self.map_tiles[x][y])
                 pygame.draw.line(self.map_surface, tile_color, [x, y], [x, y])
-
-        progress_bar.set_progress(0.9, "Saving location graph lines...")
-        # Save the neighbor lines so we don't have to calculate them each frame
-        self.neighbor_lines = set()
-        for location in self.locations:
-            for neighbor in location.neighbors:
-                sorted_point_list = sorted([(location.x, location.y), (neighbor.x, neighbor.y)])
-                self.neighbor_lines.add((sorted_point_list[0], sorted_point_list[1]))
 
         progress_bar.set_progress(1.0, "Done!")
