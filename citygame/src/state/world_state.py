@@ -4,6 +4,7 @@ from typing import List
 import pygame.draw
 from pygame import Surface
 
+from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.constants.world_constants import DISTANCE_BETWEEN_LOCATIONS
 from citygame.src.state.location_actor import LocationActor
 from citygame.src.util.locations import calculate_locations
@@ -22,16 +23,13 @@ class WorldState:
     def __init__(self, progress_bar: ProgressBar, map_size):
         self._generate_world(progress_bar, map_size)
 
-        self.starting_location = self.locations[0]
-        self.starting_location.set_as_starting_location()
-
         self.location_roads_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
         self.location_roads_surface = self.location_roads_surface.convert_alpha()
+        self.locations_to_draw = set()
 
-        self.explored_locations = set()
-        self.visitable_locations = set()
-
-        self.location_explored(self.starting_location)
+        self.starting_location = self.locations[0]
+        self.starting_location.set_as_starting_location()
+        self.location_conquered(self.starting_location)
 
     def _generate_world(self, progress_bar: ProgressBar, map_size):
         progress_bar.set_progress(0.0, "Generating tiles...")
@@ -88,11 +86,20 @@ class WorldState:
         progress_bar.set_progress(1.0, "Done!")
 
     def location_explored(self, location: LocationActor):
-        self.explored_locations.add(location)
-        self.visitable_locations.add(location)
+        self.locations_to_draw.add(location)
+        location.set_location_state(LocationState.EXPLORED)
 
+    def location_conquered(self, location: LocationActor):
+        self.locations_to_draw.add(location)
+        location.set_location_state(LocationState.CONQUERED)
+
+        # Now that we have conquered the location we discover the neighbors
         for neighbor in location.neighbors:
-            self.visitable_locations.add(neighbor)
+            # Only discover the location if it is hidden
+            if neighbor.location_state == LocationState.HIDDEN:
+                neighbor.set_location_state(LocationState.DISCOVERED)
+
+            self.locations_to_draw.add(neighbor)
             pygame.draw.aaline(
                 self.location_roads_surface, NEIGHBOR_LINE_COLOR, [location.x, location.y], [neighbor.x, neighbor.y]
             )
@@ -106,6 +113,6 @@ class WorldState:
         # Draw the neighboring location lines first so the location bubbles will be drawn over them
         screen.blit(self.location_roads_surface, (0, 0))
 
-        # Draw each location
-        for location in self.visitable_locations:
+        # Draw each location that is at least discovered
+        for location in self.locations_to_draw:
             location.render(screen)
