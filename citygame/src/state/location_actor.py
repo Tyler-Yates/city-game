@@ -18,7 +18,7 @@ class LocationActor(Actor):
         self.x = x
         self.y = y
 
-        self.neighbors: List['LocationActor'] = []
+        self.neighbors: List["LocationActor"] = []
 
     def process_input(self, events):
         pass
@@ -30,7 +30,7 @@ class LocationActor(Actor):
         gfxdraw.filled_circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, Color("red"))
         gfxdraw.circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, Color("yellow"))
 
-    def set_neighbors(self, neighbors: List['LocationActor']):
+    def set_neighbors(self, neighbors: List["LocationActor"]):
         self.neighbors = neighbors
 
     def __eq__(self, other):

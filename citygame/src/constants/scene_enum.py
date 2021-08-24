@@ -8,5 +8,6 @@ class SceneEnum(Enum):
     """
 
     MainMenu = auto()
+    MapGeneration = auto()
     Game = auto()
     GameOver = auto()

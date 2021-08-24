@@ -2,6 +2,7 @@ from citygame.src.constants.scene_enum import SceneEnum
 from citygame.src.frameprocessors.game_over_scene import GameOverScene
 from citygame.src.frameprocessors.game_scene import GameScene
 from citygame.src.frameprocessors.main_menu_scene import MainMenuScene
+from citygame.src.frameprocessors.map_creation_scene import MapCreationScene
 from citygame.src.interfaces.scene import Scene
 from citygame.src.state.game_state import GameState
 
@@ -20,6 +21,8 @@ class SceneController:
     def _get_scene_object(self, scene_id: SceneEnum) -> Scene:
         if scene_id == SceneEnum.MainMenu:
             return MainMenuScene(self.game_state, self)
+        if scene_id == SceneEnum.MapGeneration:
+            return MapCreationScene(self.game_state, self)
         if scene_id == SceneEnum.Game:
             return GameScene(self.game_state, self)
         if scene_id == SceneEnum.GameOver:

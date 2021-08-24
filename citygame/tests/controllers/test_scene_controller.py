@@ -9,7 +9,7 @@ from citygame.src.state.game_state import GameState
 class TestSceneController:
     @pytest.fixture(scope="function")
     def scene_controller(self):
-        game_state: GameState = GameState()
+        game_state: GameState = GameState(map_size=1)
         scene_controller = SceneController(game_state)
         return scene_controller
 
