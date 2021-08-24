@@ -19,15 +19,17 @@ BACKGROUND_COLOR = (0, 0, 0)
 TEXT_SIZE = 48
 
 
-class MapCreationScene(Scene):
+class WorldCreationScene(Scene):
     """
-    Scene while a new map is generated.
+    Scene while a new map is created.
     """
 
     def __init__(self, game_state: GameState, scene_controller: "SceneController"):
         super().__init__(game_state, scene_controller)
 
         self.progress_bar = ProgressBar()
+
+        # We only need one thread running in the background to generate the world
         self.executor_pool = ThreadPoolExecutor(1)
         self.map_generation_future = self.executor_pool.submit(
             self.generate_new_world_state, self.progress_bar, self.game_state.map_size
@@ -41,6 +43,7 @@ class MapCreationScene(Scene):
         pass
 
     def update(self, time_delta: float):
+        # If the world is done generating we can update the game state and move on to the game scene
         if self.map_generation_future.done():
             self.game_state.world = self.map_generation_future.result()
             self.executor_pool.shutdown()

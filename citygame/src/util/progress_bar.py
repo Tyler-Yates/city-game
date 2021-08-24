@@ -1,4 +1,8 @@
 class ProgressBar:
+    """
+    Class to track progress of a set of tasks.
+    """
+
     def __init__(self):
         self.current_task = ""
         self.progress = 0.0

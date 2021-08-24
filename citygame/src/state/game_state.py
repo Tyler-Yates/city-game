@@ -8,6 +8,8 @@ class GameState:
 
     def __init__(self, map_size: int = 400):
         self.map_size = map_size
+
+        # The world state is generated async by the world creation scene
         self.world: WorldState = None
 
     def reset(self):
