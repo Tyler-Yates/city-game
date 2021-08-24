@@ -14,7 +14,7 @@ class LocationState(Enum):
     CONQUERED = auto()
 
     @staticmethod
-    def get_rgb_color(location_state: 'LocationState') -> Color:
+    def get_rgb_color(location_state: "LocationState") -> Color:
         if location_state == LocationState.HIDDEN:
             return Color("black")
         if location_state == LocationState.DISCOVERED:

@@ -25,7 +25,8 @@ class GameScene(Scene):
         self.log = logging.getLogger(self.__class__.__name__)
 
     def process_input(self, events: List[Event]):
-        pass
+        for location in self.game_state.world.locations:
+            location.process_input(events)
 
     def update(self, time_delta: float):
         pass

@@ -1,5 +1,7 @@
+import math
 from typing import List
 
+import pygame.mouse
 from pygame import gfxdraw, Color
 from pygame.surface import Surface
 
@@ -7,7 +9,9 @@ from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.interfaces.actor import Actor
 
 LOCATION_CIRCLE_RADIUS = 5
+
 LOCATION_DOT_OUTLINE_COLOR = Color("yellow")
+LOCATION_DOT_OUTLINE_COLOR_HOVER = Color("purple")
 
 
 class LocationActor(Actor):
@@ -23,19 +27,32 @@ class LocationActor(Actor):
         self.location_state = LocationState.HIDDEN
         self.starting_location = False
 
+        self.hover = False
+
         self.neighbors: List["LocationActor"] = []
 
     def process_input(self, events):
-        pass
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_x = mouse_pos[0]
+        mouse_y = mouse_pos[1]
+
+        distance = math.sqrt(math.pow(self.x - mouse_x, 2) + math.pow(self.y - mouse_y, 2))
+        if distance < LOCATION_CIRCLE_RADIUS:
+            self.hover = True
+        else:
+            self.hover = False
 
     def update(self, time_delta: float):
         pass
 
     def render(self, screen: Surface):
         dot_color = LocationState.get_rgb_color(self.location_state)
-
         gfxdraw.filled_circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, dot_color)
-        gfxdraw.circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, LOCATION_DOT_OUTLINE_COLOR)
+
+        outline_color = LOCATION_DOT_OUTLINE_COLOR
+        if self.hover:
+            outline_color = LOCATION_DOT_OUTLINE_COLOR_HOVER
+        gfxdraw.circle(screen, self.x, self.y, LOCATION_CIRCLE_RADIUS, outline_color)
 
     def set_as_starting_location(self):
         self.starting_location = True
