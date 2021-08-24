@@ -11,7 +11,7 @@ from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
 from citygame.src.util.progress_bar import ProgressBar
 
-NEIGHBOR_LINE_COLOR = [25, 25, 25, 50]
+NEIGHBOR_LINE_COLOR = [25, 25, 25, 200]
 
 
 class WorldState:
@@ -19,7 +19,21 @@ class WorldState:
     Representation of a world.
     """
 
-    def __init__(self, progress_bar: ProgressBar, map_size: int = 400):
+    def __init__(self, progress_bar: ProgressBar, map_size):
+        self._generate_world(progress_bar, map_size)
+
+        self.starting_location = self.locations[0]
+        self.starting_location.set_as_starting_location()
+
+        self.location_roads_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
+        self.location_roads_surface = self.location_roads_surface.convert_alpha()
+
+        self.explored_locations = set()
+        self.visitable_locations = set()
+
+        self.location_explored(self.starting_location)
+
+    def _generate_world(self, progress_bar: ProgressBar, map_size):
         progress_bar.set_progress(0.0, "Generating tiles...")
         self.map_size = map_size
         self.map_tiles = generate_map(map_size, map_size)
@@ -73,6 +87,16 @@ class WorldState:
 
         progress_bar.set_progress(1.0, "Done!")
 
+    def location_explored(self, location: LocationActor):
+        self.explored_locations.add(location)
+        self.visitable_locations.add(location)
+
+        for neighbor in location.neighbors:
+            self.visitable_locations.add(neighbor)
+            pygame.draw.aaline(
+                self.location_roads_surface, NEIGHBOR_LINE_COLOR, [location.x, location.y], [neighbor.x, neighbor.y]
+            )
+
     def get_locations(self) -> List[LocationActor]:
         return self.locations
 
@@ -80,12 +104,8 @@ class WorldState:
         screen.blit(self.map_surface, (0, 0))
 
         # Draw the neighboring location lines first so the location bubbles will be drawn over them
-        # TODO draw lines once to surface so we don't have to iterate each frame
-        for neighbor_line in self.neighbor_lines:
-            point1 = neighbor_line[0]
-            point2 = neighbor_line[1]
-            pygame.draw.aaline(screen, NEIGHBOR_LINE_COLOR, [point1[0], point1[1]], [point2[0], point2[1]])
+        screen.blit(self.location_roads_surface, (0, 0))
 
         # Draw each location
-        for location in self.get_locations():
+        for location in self.visitable_locations:
             location.render(screen)
