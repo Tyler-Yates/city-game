@@ -1,5 +1,5 @@
 import math
-from typing import List, Set
+from typing import List, Set, Optional
 
 import pygame.draw
 from pygame import Surface
@@ -25,6 +25,10 @@ class WorldState:
 
         self._generate_world(progress_bar, map_size)
 
+        self.hover_location: Optional[LocationActor] = None
+
+        self.locations_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
+        self.locations_surface = self.locations_surface.convert_alpha()
         self.location_roads_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
         self.location_roads_surface = self.location_roads_surface.convert_alpha()
         self.locations_to_draw: Set[LocationActor] = set()
@@ -36,6 +40,8 @@ class WorldState:
     def location_explored(self, location: LocationActor):
         self.locations_to_draw.add(location)
         location.set_location_state(LocationState.EXPLORED)
+
+        self._redraw_locations()
 
     def location_conquered(self, location: LocationActor):
         self.locations_to_draw.add(location)
@@ -49,8 +55,16 @@ class WorldState:
 
             self.locations_to_draw.add(neighbor)
 
+        self._redraw_locations()
         # New roads are potentially available so redraw the roads
         self._redraw_location_roads()
+
+    def _redraw_locations(self):
+        self.locations_surface = Surface((self.map_size, self.map_size), pygame.SRCALPHA, 32)
+        self.locations_surface = self.location_roads_surface.convert_alpha()
+
+        for location in self.locations_to_draw:
+            location.render(self.locations_surface)
 
     def _redraw_location_roads(self):
         self.location_roads_surface = Surface((self.map_size, self.map_size), pygame.SRCALPHA, 32)
@@ -68,15 +82,20 @@ class WorldState:
     def get_locations(self) -> List[LocationActor]:
         return self.locations
 
-    def render(self, screen: Surface):
-        screen.blit(self.map_surface, (0, 0))
+    def render(self, surface: Surface):
+        if self.map_size < surface.get_width() or self.map_size < surface.get_height():
+            surface.fill(MapTile.get_rgb_value(MapTile.DEEP_WATER.value))
+
+        surface_offset_x = abs(surface.get_width() - self.map_size) // 2
+        surface_offset_y = abs(surface.get_height() - self.map_size) // 2
+
+        surface.blit(self.map_surface, (surface_offset_x, surface_offset_y))
 
         # Draw the neighboring location lines first so the location bubbles will be drawn over them
-        screen.blit(self.location_roads_surface, (0, 0))
+        surface.blit(self.location_roads_surface, (surface_offset_x, surface_offset_y))
 
-        # Draw each location that is at least discovered
-        for location in self.locations_to_draw:
-            location.render(screen)
+        # Draw the locations surface
+        surface.blit(self.locations_surface, (surface_offset_x, surface_offset_y))
 
     def _generate_world(self, progress_bar: ProgressBar, map_size):
         progress_bar.set_progress(0.0, "Generating tiles...")

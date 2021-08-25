@@ -61,3 +61,9 @@ class LocationActor(Actor):
 
     def __hash__(self):
         return hash((self.x, self.y))
+
+    def __str__(self):
+        return f"({self.x}, {self.y}) - {self.location_state}"
+
+    def __repr__(self):
+        return self.__str__()
