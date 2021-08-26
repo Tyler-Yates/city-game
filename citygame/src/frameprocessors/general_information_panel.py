@@ -23,9 +23,6 @@ class GeneralInformationPanel(Panel):
     def __init__(self, game_state: GameState, scene_controller: "SceneController", panel_width: int, panel_height: int):
         super().__init__(game_state, scene_controller, panel_width, panel_height)
         self.log = logging.getLogger(self.__class__.__name__)
-
-        self.panel_width = panel_width
-
         self.mouse_x = None
         self.mouse_y = None
 

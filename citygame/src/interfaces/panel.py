@@ -1,4 +1,5 @@
 from abc import ABC
+
 # Avoid cyclic imports since we only want these for type checking
 from typing import TYPE_CHECKING
 
