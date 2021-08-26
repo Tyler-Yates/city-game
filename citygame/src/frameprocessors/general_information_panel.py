@@ -1,12 +1,12 @@
 import logging
 from typing import List, TYPE_CHECKING
 
-from pygame import Surface
+from pygame import Surface, Color
 from pygame.event import Event
 
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
-from citygame.src.util.fonts import BASIC_FONT
+from citygame.src.util.fonts import BASIC_FONT, render_font_center, render_font_center_horizontal
 
 if TYPE_CHECKING:
     from citygame.src.controllers.scene_controller import SceneController
@@ -40,6 +40,4 @@ class GeneralInformationPanel(Panel):
 
         hover_location = self.game_state.world.hover_location
         if hover_location:
-            text_rect = BASIC_FONT.get_rect(hover_location.name, size=32)
-            text_rect.center = (surface.get_rect().center[0], 20)
-            BASIC_FONT.render_to(surface, text_rect, hover_location.name, "white", size=14)
+            render_font_center_horizontal(surface, hover_location.name, size=32, y=20, color=Color("white"))

@@ -1,12 +1,25 @@
 from typing import Tuple
 
 import pygame.freetype
+from pygame import Color
 from pygame.surface import Surface
 
 pygame.freetype.init()
 
 BASIC_FONT = pygame.freetype.SysFont("Arial", 24)
 MONOSPACE_FONT = pygame.freetype.SysFont("Courier New", 24)
+
+
+def render_font_center(surface: Surface, text: str, size: int, color: Color, font=BASIC_FONT):
+    text_rect = font.get_rect(text, size=size)
+    text_rect.center = surface.get_rect().center
+    BASIC_FONT.render_to(surface, text_rect, text, color, size=size)
+
+
+def render_font_center_horizontal(surface: Surface, text: str, size: int, y: int, color: Color, font=BASIC_FONT):
+    text_rect = font.get_rect(text, size=size)
+    text_rect.midtop = (surface.get_rect().center[0], y)
+    BASIC_FONT.render_to(surface, text_rect, text, color, size=size)
 
 
 def render_with_outline(
