@@ -114,6 +114,9 @@ class WorldState:
         for i in range(len(self.locations)):
             current_neighbors = []
             current_location = self.locations[i]
+            # TODO Generate real names
+            current_location.set_name(f"Location {i}")
+
             x1 = current_location.x
             y1 = current_location.y
 

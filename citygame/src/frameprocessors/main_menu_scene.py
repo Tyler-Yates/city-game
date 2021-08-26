@@ -31,8 +31,6 @@ class MainMenuScene(Scene):
             if event.type == pygame.KEYDOWN:
                 # Pressing Return will take you to the game
                 if event.key == pygame.K_RETURN:
-                    # Reset the game state since we are starting a new game
-                    self.game_state.reset()
                     self.scene_controller.change_active_scene(SceneEnum.WorldCreation)
 
     def update(self, time_delta: float):

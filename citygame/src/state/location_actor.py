@@ -21,6 +21,8 @@ class LocationActor(Actor):
         self.x = x
         self.y = y
 
+        self.name = f"({x},{y})"
+
         self.location_state = LocationState.HIDDEN
         self.starting_location = False
 
@@ -52,6 +54,9 @@ class LocationActor(Actor):
 
     def set_neighbors(self, neighbors: List["LocationActor"]):
         self.neighbors = neighbors
+
+    def set_name(self, name: str):
+        self.name = name
 
     def __eq__(self, other):
         if type(other) is type(self):

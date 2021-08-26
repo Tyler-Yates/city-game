@@ -7,7 +7,9 @@ from pygame import Surface
 from pygame.event import Event
 
 from citygame.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
+from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.constants.world_constants import LOCATION_DOT_RADIUS
+from citygame.src.frameprocessors.information_panel import GeneralInformationPanel
 from citygame.src.interfaces.scene import Scene
 from citygame.src.state.game_state import GameState
 from citygame.src.util.map_tile import MapTile
@@ -40,10 +42,20 @@ class GameScene(Scene):
         self.map_viewport_offset_x = abs(GAME_WIDTH_PX - self.map_viewport_surface.get_width()) // 2
         self.map_viewport_offset_y = abs(GAME_HEIGHT_PX - self.map_viewport_surface.get_height()) // 2
 
+        # Panels
+        panel_width = (GAME_WIDTH_PX - MAP_VIEWPORT_SIZE) // 2
+        panel_height = GAME_HEIGHT_PX
+
+        self.left_panel_surface = Surface((panel_width, panel_height))
+        self.right_panel_surface = Surface((panel_width, panel_height))
+
+        self.general_information_panel = GeneralInformationPanel(game_state, scene_controller, panel_width, panel_height)
+
     def process_input(self, events: List[Event]):
         mouse_pos = pygame.mouse.get_pos()
-        mouse_x_abs = mouse_pos[0]
-        mouse_y_abs = mouse_pos[1]
+        # Mouse seems to be off by a little bit so offset it
+        mouse_x_abs = mouse_pos[0] - 1
+        mouse_y_abs = mouse_pos[1] - 1
 
         # Take into account the position within the window when processing mouse position on the map
         mouse_x_map = mouse_x_abs - self.map_offset_x - self.map_viewport_offset_x
@@ -55,10 +67,11 @@ class GameScene(Scene):
             # Reset the hover status for every location
             location.hover = False
 
-            # Detect if this location is the new hover location
-            distance = math.sqrt(math.pow(location.x - mouse_x_map, 2) + math.pow(location.y - mouse_y_map, 2))
-            if distance <= LOCATION_DOT_RADIUS:
-                self.game_state.world.hover_location = location
+            # For discovered locations, detect if this location is the new hover location
+            if location.location_state != LocationState.HIDDEN:
+                distance = math.sqrt(math.pow(location.x - mouse_x_map, 2) + math.pow(location.y - mouse_y_map, 2))
+                if distance <= (LOCATION_DOT_RADIUS + 0.1):
+                    self.game_state.world.hover_location = location
 
         # Process all the events
         for event in events:
@@ -70,8 +83,12 @@ class GameScene(Scene):
         if self.game_state.world.hover_location:
             self.game_state.world.hover_location.hover = True
 
+        # Panels
+        self.general_information_panel.process_input(events, mouse_x_abs, mouse_y_abs)
+
     def update(self, time_delta: float):
-        pass
+        # Panels
+        self.general_information_panel.update(time_delta)
 
     def render(self, screen: Surface):
         screen.fill(BACKGROUND_COLOR)
@@ -87,3 +104,7 @@ class GameScene(Scene):
 
         # Render the map viewport
         screen.blit(self.map_viewport_surface, (self.map_viewport_offset_x, self.map_viewport_offset_y))
+
+        # Panels
+        self.general_information_panel.render(self.left_panel_surface)
+        screen.blit(self.left_panel_surface, (0, 0))
