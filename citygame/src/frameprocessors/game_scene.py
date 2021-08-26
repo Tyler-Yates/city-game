@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 BACKGROUND_COLOR = "black"
 
-map_panel_SIZE = 720
+MAP_PANEL_SIZE = 720
 
 
 class GameScene(Scene):
@@ -31,19 +31,17 @@ class GameScene(Scene):
         self.log = logging.getLogger(self.__class__.__name__)
 
         # Map panel
-        self.map_panel_surface = Surface((map_panel_SIZE, map_panel_SIZE))
+        self.map_panel_surface = Surface((MAP_PANEL_SIZE, MAP_PANEL_SIZE))
         self.map_panel_surface.fill(MapTile.get_rgb_value(MapTile.DEEP_WATER.value))
         self.map_panel_offset_x = abs(GAME_WIDTH_PX - self.map_panel_surface.get_width()) // 2
         self.map_panel_offset_y = abs(GAME_HEIGHT_PX - self.map_panel_surface.get_height()) // 2
+        self.map_panel = MapPanel(game_state, scene_controller, MAP_PANEL_SIZE, MAP_PANEL_SIZE)
 
-        self.map_panel = MapPanel(game_state, scene_controller, map_panel_SIZE, map_panel_SIZE)
-
-        # Side Panels
-        panel_width = (GAME_WIDTH_PX - map_panel_SIZE) // 2
+        # Left Panel
+        panel_width = (GAME_WIDTH_PX - MAP_PANEL_SIZE) // 2
         panel_height = GAME_HEIGHT_PX
         self.left_panel_surface = Surface((panel_width, panel_height))
         self.right_panel_surface = Surface((panel_width, panel_height))
-
         self.left_panel = GeneralInformationPanel(game_state, scene_controller, panel_width, panel_height)
 
     def process_input(self, events: List[Event]):
@@ -57,7 +55,7 @@ class GameScene(Scene):
             events, mouse_x_abs - self.map_panel_offset_x, mouse_y_abs - self.map_panel_offset_y
         )
 
-        # Side panels
+        # Left panel is drawn at (0, 0) so no need to adjust the mouse position
         self.left_panel.process_input(events, mouse_x_abs, mouse_y_abs)
 
     def update(self, time_delta: float):
@@ -68,10 +66,10 @@ class GameScene(Scene):
     def render(self, screen: Surface):
         screen.fill(BACKGROUND_COLOR)
 
-        # Render the map panel
+        # Map panel
         self.map_panel.render(self.map_panel_surface)
         screen.blit(self.map_panel_surface, (self.map_panel_offset_x, self.map_panel_offset_y))
 
-        # Panels
+        # Left panel
         self.left_panel.render(self.left_panel_surface)
         screen.blit(self.left_panel_surface, (0, 0))
