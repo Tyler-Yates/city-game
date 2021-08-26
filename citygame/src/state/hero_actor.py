@@ -5,7 +5,7 @@ from pygame.surface import Surface
 
 from citygame.src.interfaces.actor import Actor
 from citygame.src.state.location_actor import LocationActor
-from citygame.src.util.fonts import BASIC_FONT, render_font_center
+from citygame.src.util.fonts import render_font_center
 
 
 class Hero(Actor):

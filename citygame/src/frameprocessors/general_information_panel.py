@@ -6,7 +6,7 @@ from pygame.event import Event
 
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
-from citygame.src.util.fonts import BASIC_FONT, render_font_center, render_font_center_horizontal
+from citygame.src.util.fonts import BASIC_FONT, render_font_center_horizontal
 
 if TYPE_CHECKING:
     from citygame.src.controllers.scene_controller import SceneController
