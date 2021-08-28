@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional
 
 import pygame
 from pygame import Surface, Color
@@ -9,7 +9,7 @@ from pygame.event import Event
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
 from citygame.src.state.hero_actor import Hero
-from citygame.src.util.fonts import BASIC_FONT, render_font_upper_left
+from citygame.src.util.fonts import BASIC_FONT, render_lines_upper_left
 
 if TYPE_CHECKING:
     from citygame.src.controllers.scene_controller import SceneController
@@ -29,6 +29,7 @@ class HeroPanel(Panel):
         self.log = logging.getLogger(self.__class__.__name__)
         self.mouse_x = None
         self.mouse_y = None
+        self.current_hero_rect: Optional[HeroRect] = None
 
         self.hero_rects: List[HeroRect] = []
         self._set_hero_rects()
@@ -40,6 +41,7 @@ class HeroPanel(Panel):
         for hero_rect in self.hero_rects:
             if hero_rect.rect.collidepoint(mouse_x, mouse_y):
                 hero_rect.hover = True
+                self.current_hero_rect = hero_rect
             else:
                 hero_rect.hover = False
 
@@ -54,12 +56,15 @@ class HeroPanel(Panel):
         for hero_rect in self.hero_rects:
             if hero_rect.hover:
                 pygame.draw.rect(surface, Color("red"), hero_rect.rect, 1)
-            render_font_upper_left(
+            hero = hero_rect.hero
+            lines = [f"{hero.name} - Lv. {hero.level}", f"Location: {hero.current_location.name}"]
+            render_lines_upper_left(
                 surface,
                 x=hero_rect.rect.topleft[0],
                 y=hero_rect.rect.topleft[1],
+                border=5,
                 spacing=5,
-                text=hero_rect.hero.name,
+                lines=lines,
                 size=14,
                 color=Color("white"),
             )

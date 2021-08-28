@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 import pygame.freetype
 from pygame import Color
@@ -28,6 +28,28 @@ def render_font_upper_left(
     text_rect = font.get_rect(text, size=size)
     text_rect.topleft = (x + spacing, y + spacing)
     BASIC_FONT.render_to(surface, text_rect, text, color, size=size)
+
+
+def render_lines_upper_left(
+    surface: Surface,
+    x: int,
+    y: int,
+    border: int,
+    spacing: int,
+    lines: List[str],
+    size: int,
+    color: Color,
+    font=BASIC_FONT,
+):
+    current_x = x + border
+    current_y = y + border
+
+    for line in lines:
+        text_rect = font.get_rect(line, size=size)
+        text_rect.topleft = (current_x, current_y)
+        BASIC_FONT.render_to(surface, text_rect, line, color, size=size)
+
+        current_y = current_y + text_rect.height + spacing
 
 
 def render_with_outline(
