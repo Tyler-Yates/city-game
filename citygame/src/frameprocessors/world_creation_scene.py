@@ -4,9 +4,11 @@ from typing import List, TYPE_CHECKING
 from pygame import Surface
 from pygame.event import Event
 
+from citygame.src.constants.hero_constants import INITIAL_NUMBER_OF_HEROES
 from citygame.src.constants.scene_enum import SceneEnum
 from citygame.src.interfaces.scene import Scene
 from citygame.src.state.game_state import GameState
+from citygame.src.state.hero_actor import Hero
 from citygame.src.state.world_state import WorldState
 from citygame.src.util.fonts import BASIC_FONT
 from citygame.src.util.progress_bar import ProgressBar
@@ -36,8 +38,18 @@ class WorldCreationScene(Scene):
         )
 
     @staticmethod
-    def generate_new_world_state(progress_bar: ProgressBar, map_size: int) -> WorldState:
-        return WorldState(progress_bar, map_size=map_size)
+    def generate_new_world_state(progress_bar: ProgressBar, map_size: int) -> GameState:
+        new_game_state = GameState()
+
+        # Generate the world
+        new_game_state.world = WorldState(progress_bar, map_size=map_size)
+
+        # Generate heroes
+        new_game_state.heroes = []
+        for i in range(INITIAL_NUMBER_OF_HEROES):
+            new_game_state.heroes.append(Hero(new_game_state.world.starting_location))
+
+        return new_game_state
 
     def process_input(self, events: List[Event]):
         pass
@@ -45,7 +57,10 @@ class WorldCreationScene(Scene):
     def update(self, time_delta: float):
         # If the world is done generating we can update the game state and move on to the game scene
         if self.map_generation_future.done():
-            self.game_state.world = self.map_generation_future.result()
+            new_game_state = self.map_generation_future.result()
+            self.game_state.set_world(new_game_state.world)
+            self.game_state.set_heroes(new_game_state.heroes)
+
             self.executor_pool.shutdown()
             self.scene_controller.change_active_scene(SceneEnum.Game)
 

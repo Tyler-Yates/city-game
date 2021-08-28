@@ -22,6 +22,14 @@ def render_font_center_horizontal(surface: Surface, text: str, size: int, y: int
     BASIC_FONT.render_to(surface, text_rect, text, color, size=size)
 
 
+def render_font_upper_left(
+    surface: Surface, x: int, y: int, spacing: int, text: str, size: int, color: Color, font=BASIC_FONT
+):
+    text_rect = font.get_rect(text, size=size)
+    text_rect.topleft = (x + spacing, y + spacing)
+    BASIC_FONT.render_to(surface, text_rect, text, color, size=size)
+
+
 def render_with_outline(
     screen: Surface,
     font,

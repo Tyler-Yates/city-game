@@ -11,3 +11,11 @@ class GameState:
 
         # The world state is generated async by the world creation scene
         self.world: WorldState = None
+
+        self.heroes = []
+
+    def set_world(self, world):
+        self.world = world
+
+    def set_heroes(self, heroes):
+        self.heroes = heroes

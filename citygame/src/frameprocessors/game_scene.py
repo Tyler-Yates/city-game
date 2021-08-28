@@ -7,6 +7,7 @@ from pygame.event import Event
 
 from citygame.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from citygame.src.frameprocessors.general_information_panel import GeneralInformationPanel
+from citygame.src.frameprocessors.heros_panel import HeroPanel
 from citygame.src.frameprocessors.map_panel import MapPanel
 from citygame.src.interfaces.scene import Scene
 from citygame.src.state.game_state import GameState
@@ -41,8 +42,13 @@ class GameScene(Scene):
         panel_width = (GAME_WIDTH_PX - MAP_PANEL_SIZE) // 2
         panel_height = GAME_HEIGHT_PX
         self.left_panel_surface = Surface((panel_width, panel_height))
-        self.right_panel_surface = Surface((panel_width, panel_height))
         self.left_panel = GeneralInformationPanel(game_state, scene_controller, panel_width, panel_height)
+
+        # Right panel
+        self.right_panel_surface = Surface((panel_width, panel_height))
+        self.right_panel = HeroPanel(game_state, scene_controller, panel_width, panel_height)
+        self.right_panel_offset_x = abs(GAME_WIDTH_PX - self.right_panel_surface.get_width())
+        self.right_panel_offset_y = 0
 
     def process_input(self, events: List[Event]):
         mouse_pos = pygame.mouse.get_pos()
@@ -58,10 +64,16 @@ class GameScene(Scene):
         # Left panel is drawn at (0, 0) so no need to adjust the mouse position
         self.left_panel.process_input(events, mouse_x_abs, mouse_y_abs)
 
+        # Right panel
+        self.right_panel.process_input(
+            events, mouse_x_abs - self.right_panel_offset_x, mouse_y_abs - self.right_panel_offset_y
+        )
+
     def update(self, time_delta: float):
         # Panels
         self.map_panel.update(time_delta)
         self.left_panel.update(time_delta)
+        self.right_panel.update(time_delta)
 
     def render(self, screen: Surface):
         screen.fill(BACKGROUND_COLOR)
@@ -73,3 +85,7 @@ class GameScene(Scene):
         # Left panel
         self.left_panel.render(self.left_panel_surface)
         screen.blit(self.left_panel_surface, (0, 0))
+
+        # Right panel
+        self.right_panel.render(self.right_panel_surface)
+        screen.blit(self.right_panel_surface, (self.right_panel_offset_x, self.right_panel_offset_y))
