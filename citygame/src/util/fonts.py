@@ -52,6 +52,52 @@ def render_lines_upper_left(
         current_y = current_y + text_rect.height + spacing
 
 
+def render_lines_upper_right(
+    surface: Surface,
+    x: int,
+    y: int,
+    border: int,
+    spacing: int,
+    lines: List[str],
+    size: int,
+    color: Color,
+    font=BASIC_FONT,
+):
+    current_x = x - border
+    current_y = y + border
+
+    for line in lines:
+        text_rect = font.get_rect(line, size=size)
+        text_rect.topright = (current_x, current_y)
+        BASIC_FONT.render_to(surface, text_rect, line, color, size=size)
+
+        current_y = current_y + text_rect.height + spacing
+
+
+def get_rect_for_lines(
+    border: int,
+    spacing: int,
+    lines: List[str],
+    size: int,
+    font=BASIC_FONT,
+):
+    current_x = border
+    current_y = border
+
+    max_x = 0
+    max_y = 0
+
+    for line in lines:
+        text_rect = font.get_rect(line, size=size)
+        text_rect.topleft = (current_x, current_y)
+        current_y = current_y + text_rect.height + spacing
+
+        max_x = max(max_x, text_rect.bottomright[0])
+        max_y = max(max_y, text_rect.bottomright[1])
+
+    return pygame.Rect(0, 0, max_x + border, max_y + border)
+
+
 def render_with_outline(
     screen: Surface,
     font,

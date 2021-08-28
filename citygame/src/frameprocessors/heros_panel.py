@@ -9,14 +9,18 @@ from pygame.event import Event
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
 from citygame.src.state.hero_actor import Hero
-from citygame.src.util.fonts import BASIC_FONT, render_lines_upper_left
+from citygame.src.state.location_actor import LocationActor
+from citygame.src.util.fonts import BASIC_FONT, render_lines_upper_left, render_lines_upper_right, get_rect_for_lines
 
 if TYPE_CHECKING:
     from citygame.src.controllers.scene_controller import SceneController
 
 BACKGROUND_COLOR = "black"
 
-HERO_RECT_HEIGHT = 50
+HERO_TEXT_BORDER = 5
+HERO_TEXT_SPACING = 5
+HERO_TEXT_SIZE = 14
+HERO_TEXT_FONT = BASIC_FONT
 
 
 class HeroPanel(Panel):
@@ -30,6 +34,14 @@ class HeroPanel(Panel):
         self.mouse_x = None
         self.mouse_y = None
         self.current_hero_rect: Optional[HeroRect] = None
+
+        self.hero_rect_height = get_rect_for_lines(
+            border=HERO_TEXT_BORDER,
+            spacing=HERO_TEXT_SPACING,
+            lines=self._get_hero_information_left(Hero(LocationActor(0, 0))),
+            size=HERO_TEXT_SIZE,
+            font=HERO_TEXT_FONT,
+        ).height
 
         self.hero_rects: List[HeroRect] = []
         self._set_hero_rects()
@@ -56,18 +68,51 @@ class HeroPanel(Panel):
         for hero_rect in self.hero_rects:
             if hero_rect.hover:
                 pygame.draw.rect(surface, Color("red"), hero_rect.rect, 1)
+            else:
+                pygame.draw.rect(surface, Color("grey"), hero_rect.rect, 1)
+
             hero = hero_rect.hero
-            lines = [f"{hero.name} - Lv. {hero.level}", f"Location: {hero.current_location.name}"]
+
+            # Left side
+            lines = self._get_hero_information_left(hero)
             render_lines_upper_left(
                 surface,
                 x=hero_rect.rect.topleft[0],
                 y=hero_rect.rect.topleft[1],
-                border=5,
-                spacing=5,
+                border=HERO_TEXT_BORDER,
+                spacing=HERO_TEXT_SPACING,
                 lines=lines,
-                size=14,
+                size=HERO_TEXT_SIZE,
                 color=Color("white"),
+                font=HERO_TEXT_FONT,
             )
+
+            # Right side
+            lines = self._get_hero_information_right(hero)
+            render_lines_upper_right(
+                surface,
+                x=hero_rect.rect.topright[0],
+                y=hero_rect.rect.topright[1],
+                border=HERO_TEXT_BORDER,
+                spacing=HERO_TEXT_SPACING,
+                lines=lines,
+                size=HERO_TEXT_SIZE,
+                color=Color("white"),
+                font=HERO_TEXT_FONT,
+            )
+
+    @staticmethod
+    def _get_hero_information_left(hero: Hero) -> List[str]:
+        return [
+            f"{hero.name}",
+            f"HP: {hero.hp}/{hero.max_hp}",
+            f"Location: {hero.current_location.name}",
+            f"Destination: {'TODO'}",
+        ]
+
+    @staticmethod
+    def _get_hero_information_right(hero: Hero) -> List[str]:
+        return [f"Level {hero.level}"]
 
     def _set_hero_rects(self):
         hero_list_start_x = 10
@@ -78,8 +123,8 @@ class HeroPanel(Panel):
         for i in range(len(self.game_state.heroes)):
             hero = self.game_state.heroes[i]
 
-            y = hero_list_start_y + i * HERO_RECT_HEIGHT
-            rect = pygame.Rect(hero_list_start_x, y, width, HERO_RECT_HEIGHT)
+            y = hero_list_start_y + i * (self.hero_rect_height + 5)
+            rect = pygame.Rect(hero_list_start_x, y, width, self.hero_rect_height)
 
             hero_rect = HeroRect(rect, hero)
             self.hero_rects.append(hero_rect)

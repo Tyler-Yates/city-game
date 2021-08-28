@@ -19,6 +19,9 @@ class Hero(Actor):
         self.id = str(uuid.uuid4())
         self.level = 1
 
+        self.hp = 10
+        self.max_hp = 10
+
         # TODO Hero name generation
         self.name = "Hero Name"
 
