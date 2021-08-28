@@ -74,7 +74,9 @@ def _location_is_valid(
     return tile_valid and distance_valid
 
 
-def _calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray):
+def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> ndarray:
+    LOG.info("Calculating regions...")
+
     region_matrix = numpy.zeros_like(map_tiles)
     region_matrix.fill(-1)
 
@@ -83,22 +85,6 @@ def _calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray):
             if MapTile.is_land(map_tiles[x][y]):
                 region = _calculate_region_for_point(x, y, locations)
                 region_matrix[x][y] = region
-
-    color_list = []
-    for i in range(len(locations)):
-        color_list.append([random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)])
-
-    color_matrix = numpy.zeros(region_matrix.shape + (3,))
-    for x in range(region_matrix.shape[0]):
-        for y in range(region_matrix.shape[1]):
-            region = region_matrix[x][y]
-            if region == -1:
-                color_matrix[x][y] = MapTile.get_rgb_value(MapTile.DEEP_WATER.value)
-            else:
-                color_matrix[x][y] = color_list[region]
-
-    image = Image.fromarray(color_matrix.astype("uint8"), "RGB")
-    image.show()
 
     return region_matrix
 
@@ -164,8 +150,6 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
 
     LOG.info(f"Locations placed: {len(locations)}")
 
-    _calculate_regions(locations, map_tiles)
-
     return locations
 
 
@@ -173,9 +157,12 @@ def main():
     size = 720
     map_tiles = generate_map(size, size)
 
-    LOG.info("Calculating locations...")
     locations = calculate_locations(map_tiles)
+    region_matrix = calculate_regions(locations, map_tiles)
 
+    LOG.info("Done!")
+
+    # Visualize locations
     for location in locations:
         map_tiles[location[0]][location[1]] = 99
         map_tiles[location[0]][location[1] + 1] = 99
@@ -189,6 +176,23 @@ def main():
             rgb_value_matrix[x][y] = MapTile.get_rgb_value(map_tiles[x][y])
 
     image = Image.fromarray(rgb_value_matrix.astype("uint8"), "RGB")
+    image.show()
+
+    # Visualize regions
+    color_list = []
+    for i in range(len(locations)):
+        color_list.append([random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)])
+
+    color_matrix = numpy.zeros(region_matrix.shape + (3,))
+    for x in range(region_matrix.shape[0]):
+        for y in range(region_matrix.shape[1]):
+            region = region_matrix[x][y]
+            if region == -1:
+                color_matrix[x][y] = MapTile.get_rgb_value(MapTile.DEEP_WATER.value)
+            else:
+                color_matrix[x][y] = color_list[region]
+
+    image = Image.fromarray(color_matrix.astype("uint8"), "RGB")
     image.show()
 
 

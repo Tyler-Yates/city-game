@@ -127,7 +127,6 @@ def generate_map(width: int, height: int) -> ndarray:
     gradient_applied_matrix = _apply_gradient(noise_matrix, square_gradient_matrix)
     LOG.info("Calculating tiles...")
     map_tiles = _calculate_tiles(gradient_applied_matrix)
-    LOG.info("Completed generation")
 
     # If you want to save the map in a compressed form:
     # numpy.savez_compressed("map", map_tiles, fmt='%i')
@@ -139,6 +138,8 @@ def main():
     logging.basicConfig(level=logging.INFO)
     size = 1024
     map_tiles = generate_map(size, size)
+
+    LOG.info("Done!")
 
     rgb_value_matrix = numpy.zeros(map_tiles.shape + (3,))
     for x in range(rgb_value_matrix.shape[0]):
