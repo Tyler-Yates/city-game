@@ -2,11 +2,9 @@ import logging
 import math
 import random
 
-import matplotlib.pyplot
 import numpy
 from PIL import Image
 from numpy import ndarray
-from scipy.spatial import Voronoi, voronoi_plot_2d
 
 from citygame.src.constants.world_constants import DISTANCE_BETWEEN_LOCATIONS, MINIMUM_DISTANCE_BETWEEN_LOCATIONS
 from citygame.src.util.map_tile import MapTile
@@ -76,107 +74,56 @@ def _location_is_valid(
     return tile_valid and distance_valid
 
 
-def _calculate_regions(locations: list[tuple[int, int]]):
-    voronoi = Voronoi(locations)
-    fig = voronoi_plot_2d(voronoi)
+def _calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray):
+    region_matrix = numpy.zeros_like(map_tiles)
+    region_matrix.fill(-1)
 
-    regions = []
     for i in range(len(locations)):
-        voronoi_region_index = voronoi.point_region[i]
-        voronoi_region = voronoi.regions[voronoi_region_index]
+        location = locations[i]
+        region_matrix[location[0]][location[1]] = i
 
-        region = []
-        for point_index in voronoi_region:
-            voronoi_vertex = voronoi.vertices[point_index]
-            region.append((voronoi_vertex[0], voronoi_vertex[1]))
+    points_processed = set()
+    while True:
+        points_claimed = 0
 
-        print(f"{locations[i]} - {region}")
+        points_to_process = set()
+        for x in range(region_matrix.shape[0]):
+            for y in range(region_matrix.shape[1]):
+                if (x, y) in points_processed:
+                    continue
 
-    matplotlib.pyplot.show()
+                region = region_matrix[x][y]
+                if region != -1:
+                    points_to_process.add((x, y, region))
+
+        for point in points_to_process:
+            points_processed.add(point)
+            x = point[0]
+            y = point[1]
+            region = point[2]
+            points_claimed += _claim_point_if_valid(region, region_matrix, x - 1, y, map_tiles)
+            points_claimed += _claim_point_if_valid(region, region_matrix, x + 1, y, map_tiles)
+            points_claimed += _claim_point_if_valid(region, region_matrix, x, y - 1, map_tiles)
+            points_claimed += _claim_point_if_valid(region, region_matrix, x, y + 1, map_tiles)
+
+        if points_claimed == 0:
+            break
+
+    return region_matrix
 
 
-# def voronoi_finite_polygons_2d(vor, radius=None):
-#     """
-#     Reconstruct infinite voronoi regions in a 2D diagram to finite
-#     regions.
-#
-#     Parameters
-#     ----------
-#     vor : Voronoi
-#         Input diagram
-#     radius : float, optional
-#         Distance to 'points at infinity'.
-#
-#     Returns
-#     -------
-#     regions : list of tuples
-#         Indices of vertices in each revised Voronoi regions.
-#     vertices : list of tuples
-#         Coordinates for revised Voronoi vertices. Same as coordinates
-#         of input vertices, with 'points at infinity' appended to the
-#         end.
-#
-#     """
-#
-#     if vor.points.shape[1] != 2:
-#         raise ValueError("Requires 2D input")
-#
-#     new_regions = []
-#     new_vertices = vor.vertices.tolist()
-#
-#     center = vor.points.mean(axis=0)
-#     if radius is None:
-#         radius = vor.points.ptp().max()
-#
-#     # Construct a map containing all ridges for a given point
-#     all_ridges = {}
-#     for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
-#         all_ridges.setdefault(p1, []).append((p2, v1, v2))
-#         all_ridges.setdefault(p2, []).append((p1, v1, v2))
-#
-#     # Reconstruct infinite regions
-#     for p1, region in enumerate(vor.point_region):
-#         vertices = vor.regions[region]
-#
-#         if all(v >= 0 for v in vertices):
-#             # finite region
-#             new_regions.append(vertices)
-#             continue
-#
-#         # reconstruct a non-finite region
-#         ridges = all_ridges[p1]
-#         new_region = [v for v in vertices if v >= 0]
-#
-#         for p2, v1, v2 in ridges:
-#             if v2 < 0:
-#                 v1, v2 = v2, v1
-#             if v1 >= 0:
-#                 # finite ridge: already in the region
-#                 continue
-#
-#             # Compute the missing endpoint of an infinite ridge
-#
-#             t = vor.points[p2] - vor.points[p1] # tangent
-#             t /= np.linalg.norm(t)
-#             n = np.array([-t[1], t[0]])  # normal
-#
-#             midpoint = vor.points[[p1, p2]].mean(axis=0)
-#             direction = np.sign(np.dot(midpoint - center, n)) * n
-#             far_point = vor.vertices[v2] + direction * radius
-#
-#             new_region.append(len(new_vertices))
-#             new_vertices.append(far_point.tolist())
-#
-#         # sort region counterclockwise
-#         vs = np.asarray([new_vertices[v] for v in new_region])
-#         c = vs.mean(axis=0)
-#         angles = np.arctan2(vs[:,1] - c[1], vs[:,0] - c[0])
-#         new_region = np.array(new_region)[np.argsort(angles)]
-#
-#         # finish
-#         new_regions.append(new_region.tolist())
-#
-#     return new_regions, np.asarray(new_vertices)
+def _claim_point_if_valid(region: int, regions: ndarray, x: int, y: int, map_tiles: ndarray) -> int:
+    if x < 0 or y < 0 or x >= map_tiles.shape[0] or y >= map_tiles.shape[1]:
+        return 0
+
+    if regions[x][y] != -1:
+        return 0
+
+    if not MapTile.is_land(map_tiles[x][y]):
+        return 0
+
+    regions[x][y] = region
+    return 1
 
 
 def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
@@ -226,7 +173,7 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
 
     LOG.info(f"Locations placed: {len(locations)}")
 
-    _calculate_regions(locations)
+    _calculate_regions(locations, map_tiles)
 
     return locations
 

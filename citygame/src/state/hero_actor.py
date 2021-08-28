@@ -4,7 +4,7 @@ from pygame import Color
 from pygame.surface import Surface
 
 from citygame.src.interfaces.actor import Actor
-from citygame.src.state.location_actor import LocationActor
+from citygame.src.state.location_actor import Location
 from citygame.src.util.fonts import render_font_center
 
 
@@ -13,7 +13,7 @@ class Hero(Actor):
     Representation of a hero.
     """
 
-    def __init__(self, starting_location: LocationActor):
+    def __init__(self, starting_location: Location):
         super().__init__()
 
         self.id = str(uuid.uuid4())

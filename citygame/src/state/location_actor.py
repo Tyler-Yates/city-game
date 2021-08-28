@@ -10,13 +10,14 @@ LOCATION_DOT_OUTLINE_COLOR = Color("yellow")
 LOCATION_DOT_OUTLINE_COLOR_HOVER = Color("purple")
 
 
-class LocationActor:
+class Location:
     """
     Representation of a location.
     """
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, location_id: int, x: int, y: int):
         super().__init__()
+        self.id = location_id
         self.x = x
         self.y = y
 
@@ -25,7 +26,7 @@ class LocationActor:
         self.location_state = LocationState.HIDDEN
         self.starting_location = False
 
-        self.neighbors: List["LocationActor"] = []
+        self.neighbors: List["Location"] = []
 
     def render(self, surface: Surface, hover: bool):
         dot_color = LocationState.get_rgb_color(self.location_state)
@@ -43,7 +44,7 @@ class LocationActor:
     def set_location_state(self, location_state: LocationState):
         self.location_state = location_state
 
-    def set_neighbors(self, neighbors: List["LocationActor"]):
+    def set_neighbors(self, neighbors: List["Location"]):
         self.neighbors = neighbors
 
     def set_name(self, name: str):

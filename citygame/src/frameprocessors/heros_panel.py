@@ -9,7 +9,7 @@ from pygame.event import Event
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
 from citygame.src.state.hero_actor import Hero
-from citygame.src.state.location_actor import LocationActor
+from citygame.src.state.location_actor import Location
 from citygame.src.util.fonts import BASIC_FONT, render_lines_upper_left, render_lines_upper_right, get_rect_for_lines
 
 if TYPE_CHECKING:
@@ -38,7 +38,7 @@ class HeroPanel(Panel):
         self.hero_rect_height = get_rect_for_lines(
             border=HERO_TEXT_BORDER,
             spacing=HERO_TEXT_SPACING,
-            lines=self._get_hero_information_left(Hero(LocationActor(0, 0))),
+            lines=self._get_hero_information_left(Hero(Location(0, 0))),
             size=HERO_TEXT_SIZE,
             font=HERO_TEXT_FONT,
         ).height

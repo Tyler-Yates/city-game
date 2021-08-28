@@ -6,7 +6,7 @@ from pygame import Surface
 
 from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.constants.world_constants import DISTANCE_BETWEEN_LOCATIONS
-from citygame.src.state.location_actor import LocationActor
+from citygame.src.state.location_actor import Location
 from citygame.src.util.locations import calculate_locations
 from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
@@ -25,25 +25,25 @@ class WorldState:
 
         self._generate_world(progress_bar, map_size)
 
-        self.hover_location: Optional[LocationActor] = None
+        self.hover_location: Optional[Location] = None
 
         self.locations_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
         self.locations_surface = self.locations_surface.convert_alpha()
         self.location_roads_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
         self.location_roads_surface = self.location_roads_surface.convert_alpha()
-        self.locations_to_draw: Set[LocationActor] = set()
+        self.locations_to_draw: Set[Location] = set()
 
         self.starting_location = self.locations[0]
         self.starting_location.set_as_starting_location()
         self.location_conquered(self.starting_location)
 
-    def location_explored(self, location: LocationActor):
+    def location_explored(self, location: Location):
         self.locations_to_draw.add(location)
         location.set_location_state(LocationState.EXPLORED)
 
         self._redraw_locations()
 
-    def location_conquered(self, location: LocationActor):
+    def location_conquered(self, location: Location):
         self.locations_to_draw.add(location)
         location.set_location_state(LocationState.CONQUERED)
 
@@ -79,7 +79,7 @@ class WorldState:
                     self.location_roads_surface, NEIGHBOR_LINE_COLOR, [location.x, location.y], [neighbor.x, neighbor.y]
                 )
 
-    def get_locations(self) -> List[LocationActor]:
+    def get_locations(self) -> List[Location]:
         return self.locations
 
     def render(self, surface: Surface):
@@ -107,8 +107,9 @@ class WorldState:
         progress_bar.set_progress(0.6, "Calculating location graph...")
         # Create the location objects
         self.locations = []
-        for location_point in location_points:
-            self.locations.append(LocationActor(location_point[0], location_point[1]))
+        for i in range(len(location_points)):
+            location_coordinates = location_points[i]
+            self.locations.append(Location(i, location_coordinates[0], location_coordinates[1]))
 
         # Calculate neighbors for each location
         for i in range(len(self.locations)):

@@ -52,3 +52,13 @@ class MapTile(Enum):
             return False
         else:
             return False
+
+    @staticmethod
+    def is_land(tile: Union[int, float]) -> bool:
+        tile = int(tile)
+
+        if tile == MapTile.DEEP_WATER.value:
+            return False
+        elif tile == MapTile.SHALLOW_WATER.value:
+            return False
+        return True
