@@ -78,52 +78,43 @@ def _calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray):
     region_matrix = numpy.zeros_like(map_tiles)
     region_matrix.fill(-1)
 
+    for x in range(region_matrix.shape[0]):
+        for y in range(region_matrix.shape[1]):
+            if MapTile.is_land(map_tiles[x][y]):
+                region = _calculate_region_for_point(x, y, locations)
+                region_matrix[x][y] = region
+
+    color_list = []
     for i in range(len(locations)):
-        location = locations[i]
-        region_matrix[location[0]][location[1]] = i
+        color_list.append([random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)])
 
-    points_processed = set()
-    while True:
-        points_claimed = 0
+    color_matrix = numpy.zeros(region_matrix.shape + (3,))
+    for x in range(region_matrix.shape[0]):
+        for y in range(region_matrix.shape[1]):
+            region = region_matrix[x][y]
+            if region == -1:
+                color_matrix[x][y] = MapTile.get_rgb_value(MapTile.DEEP_WATER.value)
+            else:
+                color_matrix[x][y] = color_list[region]
 
-        points_to_process = set()
-        for x in range(region_matrix.shape[0]):
-            for y in range(region_matrix.shape[1]):
-                if (x, y) in points_processed:
-                    continue
-
-                region = region_matrix[x][y]
-                if region != -1:
-                    points_to_process.add((x, y, region))
-
-        for point in points_to_process:
-            points_processed.add(point)
-            x = point[0]
-            y = point[1]
-            region = point[2]
-            points_claimed += _claim_point_if_valid(region, region_matrix, x - 1, y, map_tiles)
-            points_claimed += _claim_point_if_valid(region, region_matrix, x + 1, y, map_tiles)
-            points_claimed += _claim_point_if_valid(region, region_matrix, x, y - 1, map_tiles)
-            points_claimed += _claim_point_if_valid(region, region_matrix, x, y + 1, map_tiles)
-
-        if points_claimed == 0:
-            break
+    image = Image.fromarray(color_matrix.astype("uint8"), "RGB")
+    image.show()
 
     return region_matrix
 
 
-def _claim_point_if_valid(region: int, regions: ndarray, x: int, y: int, map_tiles: ndarray) -> int:
-    if x < 0 or y < 0 or x >= map_tiles.shape[0] or y >= map_tiles.shape[1]:
-        return 0
+def _calculate_region_for_point(x: int, y: int, locations: list[tuple[int, int]]) -> int:
+    nodes = numpy.asarray(locations)
+    distance_array = numpy.sum((nodes - (x, y)) ** 2, axis=1)
 
-    if regions[x][y] != -1:
-        return 0
+    minimum_distance = distance_array[0]
+    chosen_index = 0
+    for i in range(len(locations)):
+        if distance_array[i] <= minimum_distance:
+            minimum_distance = distance_array[i]
+            chosen_index = i
 
-    if not MapTile.is_land(map_tiles[x][y]):
-        return 0
-
-    regions[x][y] = region
-    return 1
+    return chosen_index
 
 
 def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
@@ -179,7 +170,7 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
 
 
 def main():
-    size = 125
+    size = 720
     map_tiles = generate_map(size, size)
 
     LOG.info("Calculating locations...")
