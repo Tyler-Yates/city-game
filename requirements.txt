@@ -5,3 +5,4 @@ numpy
 noise
 scipy
 Pillow
+matplotlib
