@@ -39,9 +39,6 @@ class MapPanel(Panel):
         # See if any locations are the new hover location and deal with mouse actions on that location
         self.game_state.world.hover_location = None
         for location in self.game_state.world.locations:
-            # Reset the hover status for every location
-            location.hover = False
-
             # For discovered locations, detect if this location is the new hover location
             if location.location_state != LocationState.HIDDEN:
                 distance = math.sqrt(math.pow(location.x - mouse_x_map, 2) + math.pow(location.y - mouse_y_map, 2))
@@ -66,7 +63,7 @@ class MapPanel(Panel):
         self.game_state.world.render(self.map_surface)
         # Render the hover location to change the dot ring color
         if self.game_state.world.hover_location:
-            self.game_state.world.hover_location.render(self.map_surface)
+            self.game_state.world.hover_location.render(self.map_surface, hover=True)
 
         # Render the map surface to the map panel, centered
         surface.blit(self.map_surface, (self.map_offset_x, self.map_offset_y))

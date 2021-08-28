@@ -64,7 +64,7 @@ class WorldState:
         self.locations_surface = self.location_roads_surface.convert_alpha()
 
         for location in self.locations_to_draw:
-            location.render(self.locations_surface)
+            location.render(self.locations_surface, hover=False)
 
     def _redraw_location_roads(self):
         self.location_roads_surface = Surface((self.map_size, self.map_size), pygame.SRCALPHA, 32)

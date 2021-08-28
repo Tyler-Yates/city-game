@@ -53,9 +53,8 @@ class HeroPanel(Panel):
         for hero_rect in self.hero_rects:
             if hero_rect.rect.collidepoint(mouse_x, mouse_y):
                 hero_rect.hover = True
+                self.game_state.world.hover_location = hero_rect.hero.current_location
                 self.current_hero_rect = hero_rect
-            else:
-                hero_rect.hover = False
 
     def update(self, time_delta: float):
         pass

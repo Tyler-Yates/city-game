@@ -42,11 +42,15 @@ class GameScene(Scene):
         panel_width = (GAME_WIDTH_PX - MAP_PANEL_SIZE) // 2
         panel_height = GAME_HEIGHT_PX
         self.left_panel_surface = Surface((panel_width, panel_height))
-        self.left_panel = GeneralInformationPanel(game_state, scene_controller, panel_width, panel_height)
+        self.general_information_panel = GeneralInformationPanel(
+            game_state, scene_controller, panel_width, panel_height
+        )
+        self.left_panel = self.general_information_panel
 
         # Right panel
         self.right_panel_surface = Surface((panel_width, panel_height))
-        self.right_panel = HeroPanel(game_state, scene_controller, panel_width, panel_height)
+        self.hero_panel = HeroPanel(game_state, scene_controller, panel_width, panel_height)
+        self.right_panel = self.hero_panel
         self.right_panel_offset_x = abs(GAME_WIDTH_PX - self.right_panel_surface.get_width())
         self.right_panel_offset_y = 0
 
@@ -55,6 +59,12 @@ class GameScene(Scene):
         # Mouse seems to be off by a little bit so offset it
         mouse_x_abs = mouse_pos[0] - 1
         mouse_y_abs = mouse_pos[1] - 1
+
+        # Reset hover state
+        for location in self.game_state.world.locations:
+            location.hover = False
+        for hero_rect in self.hero_panel.hero_rects:
+            hero_rect.hover = False
 
         # Map panel
         self.map_panel.process_input(
