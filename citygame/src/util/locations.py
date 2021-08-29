@@ -80,9 +80,25 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
     region_matrix = numpy.zeros_like(map_tiles)
     region_matrix.fill(-1)
 
+    # Set the minimum distance around each location so we don't have to calculate distance against all locations
+    for i in range(len(locations)):
+        location = locations[i]
+        minimum_distance_between_borders = MINIMUM_DISTANCE_BETWEEN_LOCATIONS // 2
+        starting_x = location[0] - minimum_distance_between_borders
+        starting_y = location[1] - minimum_distance_between_borders
+        for x in range(starting_x, starting_x + MINIMUM_DISTANCE_BETWEEN_LOCATIONS):
+            for y in range(starting_y, starting_y + MINIMUM_DISTANCE_BETWEEN_LOCATIONS):
+                if not MapTile.is_land(map_tiles[x][y]):
+                    continue
+
+                distance = math.sqrt(math.pow(x - location[0], 2) + math.pow(y - location[1], 2))
+                if distance < minimum_distance_between_borders:
+                    region_matrix[x][y] = i
+
+    # For the remaining tiles, calculate distance to all locations and pick the closest one
     for x in range(region_matrix.shape[0]):
         for y in range(region_matrix.shape[1]):
-            if MapTile.is_land(map_tiles[x][y]):
+            if MapTile.is_land(map_tiles[x][y]) and region_matrix[x][y] == -1:
                 region = _calculate_region_for_point(x, y, locations)
                 region_matrix[x][y] = region
 
@@ -154,7 +170,7 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
 
 
 def main():
-    size = 720
+    size = 500
     map_tiles = generate_map(size, size)
 
     locations = calculate_locations(map_tiles)
