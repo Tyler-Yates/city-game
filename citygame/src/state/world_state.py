@@ -7,7 +7,7 @@ from pygame import Surface
 from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.constants.world_constants import DISTANCE_BETWEEN_LOCATIONS
 from citygame.src.state.location_actor import Location
-from citygame.src.util.locations import calculate_locations
+from citygame.src.util.locations import calculate_locations, calculate_regions, calculate_borders
 from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
 from citygame.src.util.progress_bar import ProgressBar
@@ -104,9 +104,13 @@ class WorldState:
         progress_bar.set_progress(0.3, "Generating locations...")
         location_points = calculate_locations(self.map_tiles)
 
-        progress_bar.set_progress(0.6, "Calculating location graph...")
+        progress_bar.set_progress(0.6, "Calculating regions...")
+        self.region_matrix = calculate_regions(location_points, self.map_tiles)
+        self.location_to_border_points = calculate_borders(location_points, self.region_matrix)
+
+        progress_bar.set_progress(0.8, "Calculating location graph...")
         # Create the location objects
-        self.locations = []
+        self.locations: List[Location] = []
         for i in range(len(location_points)):
             location_coordinates = location_points[i]
             self.locations.append(Location(i, location_coordinates[0], location_coordinates[1]))

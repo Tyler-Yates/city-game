@@ -3,6 +3,7 @@ import math
 import multiprocessing
 import random
 from multiprocessing import Pool
+from typing import Dict, List
 
 import numpy
 from PIL import Image
@@ -90,6 +91,9 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
         starting_y = location[1] - minimum_distance_between_borders
         for x in range(starting_x, starting_x + MINIMUM_DISTANCE_BETWEEN_LOCATIONS):
             for y in range(starting_y, starting_y + MINIMUM_DISTANCE_BETWEEN_LOCATIONS):
+                if x < 0 or x >= map_tiles.shape[0] or y < 0 or y >= map_tiles.shape[1]:
+                    continue
+
                 if not MapTile.is_land(map_tiles[x][y]):
                     continue
 
@@ -130,6 +134,41 @@ def _calculate_region_for_point(input_tuple: tuple[int, int, list[tuple[int, int
             chosen_index = i
 
     return chosen_index
+
+
+def calculate_borders(locations, region_matrix: ndarray) -> Dict[int, List[tuple[int, int]]]:
+    LOG.info("Calculating borders...")
+
+    location_to_border_points = dict()
+
+    for i in range(len(locations)):
+        location_to_border_points[i] = []
+
+    for x in range(region_matrix.shape[0]):
+        for y in range(region_matrix.shape[1]):
+            if region_matrix[x][y] == -1:
+                continue
+
+            if _is_border_title(x, y, region_matrix):
+                location = region_matrix[x][y]
+                location_to_border_points[location].append((x, y))
+
+    return location_to_border_points
+
+
+def _is_border_title(x: int, y: int, region_matrix: ndarray) -> bool:
+    region = region_matrix[x][y]
+
+    if region_matrix[x - 1][y] != region:
+        return True
+    if region_matrix[x + 1][y] != region:
+        return True
+    if region_matrix[x][y - 1] != region:
+        return True
+    if region_matrix[x][y + 1] != region:
+        return True
+
+    return False
 
 
 def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
@@ -183,11 +222,12 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
 
 
 def main():
-    size = 720
+    size = 500
     map_tiles = generate_map(size, size)
 
     locations = calculate_locations(map_tiles)
     region_matrix = calculate_regions(locations, map_tiles)
+    borders = calculate_borders(locations, region_matrix)
 
     LOG.info("Done!")
 
@@ -220,6 +260,14 @@ def main():
                 color_matrix[x][y] = MapTile.get_rgb_value(MapTile.DEEP_WATER.value)
             else:
                 color_matrix[x][y] = color_list[region]
+
+    color_list = []
+    for i in range(len(locations)):
+        color_list.append([random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)])
+    for location, border_points in borders.items():
+        color = color_list[location]
+        for border_point in border_points:
+            color_matrix[border_point[0]][border_point[1]] = color
 
     image = Image.fromarray(color_matrix.astype("uint8"), "RGB")
     image.show()
