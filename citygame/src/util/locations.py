@@ -1,6 +1,8 @@
 import logging
 import math
 import random
+import time
+from multiprocessing import Pool
 
 import numpy
 from PIL import Image
@@ -80,6 +82,7 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
     region_matrix = numpy.zeros_like(map_tiles)
     region_matrix.fill(-1)
 
+    start = time.time()
     # Set the minimum distance around each location so we don't have to calculate distance against all locations
     for i in range(len(locations)):
         location = locations[i]
@@ -96,16 +99,29 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
                     region_matrix[x][y] = i
 
     # For the remaining tiles, calculate distance to all locations and pick the closest one
+    points_to_process = []
     for x in range(region_matrix.shape[0]):
         for y in range(region_matrix.shape[1]):
             if MapTile.is_land(map_tiles[x][y]) and region_matrix[x][y] == -1:
-                region = _calculate_region_for_point(x, y, locations)
-                region_matrix[x][y] = region
+                points_to_process.append((x, y, locations, region_matrix))
+    with Pool(5) as p:
+        result = p.map(_calculate_region_for_point, points_to_process)
+        for i in range(len(result)):
+            point = points_to_process[i]
+            x = point[0]
+            y = point[1]
+            region_matrix[x][y] = result[i]
 
+    end = time.time()
+    print(end - start)
     return region_matrix
 
 
-def _calculate_region_for_point(x: int, y: int, locations: list[tuple[int, int]]) -> int:
+def _calculate_region_for_point(input_tuple: tuple[int, int, list[tuple[int, int]], ndarray]) -> int:
+    x = input_tuple[0]
+    y = input_tuple[1]
+    locations = input_tuple[2]
+
     nodes = numpy.asarray(locations)
     distance_array = numpy.sum((nodes - (x, y)) ** 2, axis=1)
 
@@ -170,7 +186,7 @@ def calculate_locations(map_tiles: ndarray) -> list[tuple[int, int]]:
 
 
 def main():
-    size = 500
+    size = 720
     map_tiles = generate_map(size, size)
 
     locations = calculate_locations(map_tiles)
