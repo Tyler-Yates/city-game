@@ -1,7 +1,7 @@
 import logging
 import math
+import multiprocessing
 import random
-import time
 from multiprocessing import Pool
 
 import numpy
@@ -82,7 +82,6 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
     region_matrix = numpy.zeros_like(map_tiles)
     region_matrix.fill(-1)
 
-    start = time.time()
     # Set the minimum distance around each location so we don't have to calculate distance against all locations
     for i in range(len(locations)):
         location = locations[i]
@@ -104,7 +103,7 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
         for y in range(region_matrix.shape[1]):
             if MapTile.is_land(map_tiles[x][y]) and region_matrix[x][y] == -1:
                 points_to_process.append((x, y, locations, region_matrix))
-    with Pool(5) as p:
+    with Pool(multiprocessing.cpu_count()) as p:
         result = p.map(_calculate_region_for_point, points_to_process)
         for i in range(len(result)):
             point = points_to_process[i]
@@ -112,8 +111,6 @@ def calculate_regions(locations: list[tuple[int, int]], map_tiles: ndarray) -> n
             y = point[1]
             region_matrix[x][y] = result[i]
 
-    end = time.time()
-    print(end - start)
     return region_matrix
 
 
