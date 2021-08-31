@@ -3,6 +3,7 @@ import random
 import uuid
 from typing import List, Optional
 
+import pygame.draw_py
 from pygame import Color
 from pygame.surface import Surface
 
@@ -42,6 +43,15 @@ class Hero(Actor):
 
     def render(self, surface: Surface):
         render_font_center(surface, f"{self.name} Lv. {self.level}", 14, Color("white"))
+
+    def render_path(self, surface: Surface):
+        if self.destination:
+            current_location = self.current_location
+            for path_location in self.move_path:
+                pygame.draw.line(
+                    surface, Color("red"), (current_location.x, current_location.y), (path_location.x, path_location.y)
+                )
+                current_location = path_location
 
     def get_destination(self) -> str:
         if self.destination:
@@ -134,11 +144,15 @@ class Hero(Actor):
 
         # Build up the path by grabbing the previous location starting with the destination
         path = []
-        current_location = destination
+        location_pointer = destination
         if location_to_previous_location[destination] or destination == self.current_location:
-            while current_location:
-                path.insert(0, current_location)
-                current_location = location_to_previous_location[current_location]
+            while location_pointer:
+                # We don't need to add the current location to the path as we are already there
+                if location_pointer == self.current_location:
+                    break
+
+                path.insert(0, location_pointer)
+                location_pointer = location_to_previous_location[location_pointer]
 
         return path
 

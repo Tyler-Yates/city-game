@@ -12,7 +12,7 @@ from citygame.src.util.map_tile import MapTile
 from citygame.src.util.maps import generate_map
 from citygame.src.util.progress_bar import ProgressBar
 
-NEIGHBOR_LINE_COLOR = [25, 25, 25, 200]
+NEIGHBOR_LINE_COLOR = [25, 25, 25]
 
 
 class WorldState:
@@ -26,6 +26,9 @@ class WorldState:
         self._generate_world(progress_bar, map_size)
 
         self.hover_location: Optional[Location] = None
+
+        self.surface_offset_x = 0
+        self.surface_offset_y = 0
 
         self.locations_surface = Surface((map_size, map_size), pygame.SRCALPHA, 32)
         self.locations_surface = self.locations_surface.convert_alpha()
@@ -61,7 +64,7 @@ class WorldState:
 
     def _redraw_locations(self):
         self.locations_surface = Surface((self.map_size, self.map_size), pygame.SRCALPHA, 32)
-        self.locations_surface = self.location_roads_surface.convert_alpha()
+        self.locations_surface = self.locations_surface.convert_alpha()
 
         for location in self.locations_to_draw:
             location.render(self.locations_surface, hover=False)
@@ -75,27 +78,29 @@ class WorldState:
                 continue
 
             for neighbor in location.neighbors:
-                pygame.draw.aaline(
+                pygame.draw.line(
                     self.location_roads_surface, NEIGHBOR_LINE_COLOR, [location.x, location.y], [neighbor.x, neighbor.y]
                 )
 
     def get_locations(self) -> List[Location]:
         return self.locations
 
-    def render(self, surface: Surface):
+    def render_geography(self, surface: Surface):
         if self.map_size < surface.get_width() or self.map_size < surface.get_height():
             surface.fill(MapTile.get_rgb_value(MapTile.DEEP_WATER.value))
 
-        surface_offset_x = abs(surface.get_width() - self.map_size) // 2
-        surface_offset_y = abs(surface.get_height() - self.map_size) // 2
+        self.surface_offset_x = abs(surface.get_width() - self.map_size) // 2
+        self.surface_offset_y = abs(surface.get_height() - self.map_size) // 2
 
-        surface.blit(self.map_surface, (surface_offset_x, surface_offset_y))
+        surface.blit(self.map_surface, (self.surface_offset_x, self.surface_offset_y))
 
+    def render_roads(self, surface: Surface):
         # Draw the neighboring location lines first so the location bubbles will be drawn over them
-        surface.blit(self.location_roads_surface, (surface_offset_x, surface_offset_y))
+        surface.blit(self.location_roads_surface, (self.surface_offset_x, self.surface_offset_y))
 
+    def render_locations(self, surface: Surface):
         # Draw the locations surface
-        surface.blit(self.locations_surface, (surface_offset_x, surface_offset_y))
+        surface.blit(self.locations_surface, (self.surface_offset_x, self.surface_offset_y))
 
     def _generate_world(self, progress_bar: ProgressBar, map_size):
         progress_bar.set_progress(0.0, "Generating tiles...")

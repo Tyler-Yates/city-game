@@ -66,10 +66,20 @@ class MapPanel(Panel):
         pass
 
     def render(self, surface: Surface):
-        # Render the world to the map surface
-        self.game_state.world.render(self.map_surface)
+        # Render geography first
+        self.game_state.world.render_geography(self.map_surface)
 
-        # Render the hover location to change the dot ring color
+        # Render roads as we want them to show up below locations
+        self.game_state.world.render_roads(self.map_surface)
+
+        # Render hero path if relevant
+        if self.game_state.selected_hero:
+            self.game_state.selected_hero.render_path(self.map_surface)
+
+        # Render the locations above the roads
+        self.game_state.world.render_locations(self.map_surface)
+
+        # Render the hover location above the static map image
         if self.game_state.world.hover_location:
             border_points = self.game_state.world.location_to_border_points[self.game_state.world.hover_location.id]
             for border_point in border_points:
