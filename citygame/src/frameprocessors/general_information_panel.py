@@ -6,13 +6,18 @@ from pygame.event import Event
 
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
-from citygame.src.util.fonts import BASIC_FONT, render_font_center_horizontal
+from citygame.src.util.fonts import BASIC_FONT, render_font_center_horizontal, render_lines_upper_left
 
 if TYPE_CHECKING:
     from citygame.src.controllers.scene_controller import SceneController
 
 
 BACKGROUND_COLOR = "black"
+
+HERO_TEXT_BORDER = 5
+HERO_TEXT_SPACING = 5
+HERO_TEXT_SIZE = 14
+HERO_TEXT_FONT = BASIC_FONT
 
 
 class GeneralInformationPanel(Panel):
@@ -41,3 +46,17 @@ class GeneralInformationPanel(Panel):
         hover_location = self.game_state.world.hover_location
         if hover_location:
             render_font_center_horizontal(surface, hover_location.name, size=32, y=20, color=Color("white"))
+
+        if self.game_state.selected_hero:
+            lines = self.game_state.selected_hero.get_full_information()
+            render_lines_upper_left(
+                surface,
+                x=0,
+                y=200,
+                border=HERO_TEXT_BORDER,
+                spacing=HERO_TEXT_SPACING,
+                lines=lines,
+                size=HERO_TEXT_SIZE,
+                color=Color("white"),
+                font=HERO_TEXT_FONT,
+            )

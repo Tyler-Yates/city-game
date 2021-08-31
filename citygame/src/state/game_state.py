@@ -1,4 +1,7 @@
+from typing import Optional
+
 from citygame.src.constants.world_constants import DEFAULT_MAP_SIZE
+from citygame.src.state.hero_actor import Hero
 from citygame.src.state.world_state import WorldState
 
 
@@ -14,6 +17,7 @@ class GameState:
         self.world: WorldState = None
 
         self.heroes = []
+        self.selected_hero: Optional[Hero] = None
 
     def set_world(self, world):
         self.world = world

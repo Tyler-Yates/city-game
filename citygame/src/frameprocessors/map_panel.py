@@ -1,5 +1,4 @@
 import logging
-import math
 from typing import List, TYPE_CHECKING
 
 import pygame
@@ -7,10 +6,8 @@ from pygame import Surface
 from pygame.event import Event
 
 from citygame.src.constants.location_state_enum import LocationState
-from citygame.src.constants.world_constants import LOCATION_DOT_RADIUS
 from citygame.src.interfaces.panel import Panel
 from citygame.src.state.game_state import GameState
-from citygame.src.state.location_actor import Location
 
 if TYPE_CHECKING:
     from citygame.src.controllers.scene_controller import SceneController

@@ -7,7 +7,7 @@ from pygame.event import Event
 
 from citygame.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from citygame.src.frameprocessors.general_information_panel import GeneralInformationPanel
-from citygame.src.frameprocessors.heros_panel import HeroPanel
+from citygame.src.frameprocessors.hero_panel import HeroPanel
 from citygame.src.frameprocessors.map_panel import MapPanel
 from citygame.src.interfaces.scene import Scene
 from citygame.src.state.game_state import GameState

@@ -56,6 +56,12 @@ class HeroPanel(Panel):
                 self.game_state.world.hover_location = hero_rect.hero.current_location
                 self.current_hero_rect = hero_rect
 
+        for event in events:
+            # Left mouse button released
+            if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
+                if self.current_hero_rect:
+                    self.game_state.selected_hero = self.current_hero_rect.hero
+
     def update(self, time_delta: float):
         pass
 
@@ -65,10 +71,13 @@ class HeroPanel(Panel):
         BASIC_FONT.render_to(surface, [20, 20], "Heroes", "white", size=22)
 
         for hero_rect in self.hero_rects:
-            if hero_rect.hover:
-                pygame.draw.rect(surface, Color("red"), hero_rect.rect, 1)
+            if self.game_state.selected_hero == hero_rect.hero:
+                hero_rect_color = Color("red")
+            elif hero_rect.hover:
+                hero_rect_color = Color("white")
             else:
-                pygame.draw.rect(surface, Color("grey"), hero_rect.rect, 1)
+                hero_rect_color = Color(75, 75, 75)
+            pygame.draw.rect(surface, hero_rect_color, hero_rect.rect, 1)
 
             hero = hero_rect.hero
 
