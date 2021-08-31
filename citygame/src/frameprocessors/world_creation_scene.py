@@ -47,7 +47,7 @@ class WorldCreationScene(Scene):
         # Generate heroes
         new_game_state.heroes = []
         for i in range(INITIAL_NUMBER_OF_HEROES):
-            new_game_state.heroes.append(Hero(new_game_state.world.starting_location))
+            new_game_state.heroes.append(Hero(new_game_state.world.starting_location, new_game_state))
 
         return new_game_state
 
@@ -58,8 +58,7 @@ class WorldCreationScene(Scene):
         # If the world is done generating we can update the game state and move on to the game scene
         if self.map_generation_future.done():
             new_game_state = self.map_generation_future.result()
-            self.game_state.set_world(new_game_state.world)
-            self.game_state.set_heroes(new_game_state.heroes)
+            self.game_state.set_state(new_game_state)
 
             self.executor_pool.shutdown()
             self.scene_controller.change_active_scene(SceneEnum.Game)

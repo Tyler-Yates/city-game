@@ -1,7 +1,7 @@
 import math
 import random
 import uuid
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 import pygame.draw_py
 from pygame import Color
@@ -12,14 +12,19 @@ from citygame.src.interfaces.actor import Actor
 from citygame.src.state.location_actor import Location
 from citygame.src.util.fonts import render_font_center
 
+if TYPE_CHECKING:
+    from citygame.src.state.game_state import GameState
+
 
 class Hero(Actor):
     """
     Representation of a hero.
     """
 
-    def __init__(self, starting_location: Location):
+    def __init__(self, starting_location: Location, game_state: "GameState"):
         super().__init__()
+
+        self.game_state = game_state
 
         self.id = str(uuid.uuid4())
         self.level = 1
@@ -94,6 +99,7 @@ class Hero(Actor):
         # Pop from the path since we are moving to that location
         next_location = self.move_path.pop(0)
         self.current_location = next_location
+        self.game_state.log_event(f"Hero {self.name} moved to {self.current_location.name}")
 
         if self.destination == self.current_location:
             self.destination = None
@@ -130,7 +136,10 @@ class Hero(Actor):
                 break
 
             # Heroes can only move through conquered locations
-            if minimum_distance_location.location_state == LocationState.CONQUERED:
+            if (
+                minimum_distance_location.location_state == LocationState.CONQUERED
+                or minimum_distance_location == self.current_location
+            ):
                 for neighbor in minimum_distance_location.neighbors:
                     # Do not consider hidden locations
                     if neighbor.location_state == LocationState.HIDDEN:

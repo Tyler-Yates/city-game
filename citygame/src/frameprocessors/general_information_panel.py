@@ -47,16 +47,17 @@ class GeneralInformationPanel(Panel):
         if hover_location:
             render_font_center_horizontal(surface, hover_location.name, size=32, y=20, color=Color("white"))
 
-        if self.game_state.selected_hero:
-            lines = self.game_state.selected_hero.get_full_information()
-            render_lines_upper_left(
-                surface,
-                x=0,
-                y=200,
-                border=HERO_TEXT_BORDER,
-                spacing=HERO_TEXT_SPACING,
-                lines=lines,
-                size=HERO_TEXT_SIZE,
-                color=Color("white"),
-                font=HERO_TEXT_FONT,
-            )
+        # TODO better handling of too many events
+        # Events
+        lines = self.game_state.events[-10:]
+        render_lines_upper_left(
+            surface,
+            x=0,
+            y=200,
+            border=HERO_TEXT_BORDER,
+            spacing=HERO_TEXT_SPACING,
+            lines=lines,
+            size=HERO_TEXT_SIZE,
+            color=Color("white"),
+            font=HERO_TEXT_FONT,
+        )

@@ -20,12 +20,14 @@ class GameState:
         self.selected_hero: Optional[Hero] = None
         self.hover_hero: Optional[Hero] = None
 
-    def set_world(self, world):
-        self.world = world
+        self.events: List[str] = []
 
-    def set_heroes(self, heroes):
-        self.heroes = heroes
+    def set_state(self, new_game_state: "GameState"):
+        self.__dict__.update(new_game_state.__dict__)
 
     def end_turn(self):
         for hero in self.heroes:
             hero.end_turn()
+
+    def log_event(self, event: str):
+        self.events.append(event)
