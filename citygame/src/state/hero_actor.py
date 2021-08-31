@@ -1,6 +1,6 @@
 import random
 import uuid
-from typing import List
+from typing import List, Optional
 
 from pygame import Color
 from pygame.surface import Surface
@@ -28,6 +28,7 @@ class Hero(Actor):
         self.name = f"Hero {random.randint(0, 99)}"
 
         self.current_location = starting_location
+        self.destination: Optional[Location] = None
 
     def process_input(self, events):
         pass
@@ -38,6 +39,11 @@ class Hero(Actor):
     def render(self, surface: Surface):
         render_font_center(surface, f"{self.name} Lv. {self.level}", 14, Color("white"))
 
+    def get_destination(self) -> str:
+        if self.destination:
+            return self.destination.name
+        return "None"
+
     def get_full_information(self) -> List[str]:
         return [
             f"{self.name}",
@@ -45,8 +51,14 @@ class Hero(Actor):
             f"HP {self.hp}/{self.max_hp}",
             "",
             f"Location: {self.current_location.name}",
-            "Destination: TODO",
+            f"Destination: {self.get_destination()}",
         ]
+
+    def set_destination(self, destination: Location):
+        if destination == self.current_location:
+            return
+
+        self.destination = destination
 
     def __eq__(self, other):
         if type(other) is type(self):

@@ -52,12 +52,12 @@ class Location:
 
     def __eq__(self, other):
         if type(other) is type(self):
-            return (self.x == other.x) and (self.y == other.y)
+            return (self.id == other.id) and (self.x == other.x) and (self.y == other.y)
         else:
             return False
 
     def __hash__(self):
-        return hash((self.x, self.y))
+        return hash((self.id, self.x, self.y))
 
     def __str__(self):
         return f"({self.x}, {self.y}) - {self.location_state}"
