@@ -60,7 +60,7 @@ class Location:
         return hash((self.id, self.x, self.y))
 
     def __str__(self):
-        return f"({self.x}, {self.y}) - {self.location_state}"
+        return f"{self.name} - ({self.x}, {self.y}) - {self.location_state}"
 
     def __repr__(self):
         return self.__str__()

@@ -79,6 +79,13 @@ class GameScene(Scene):
             events, mouse_x_abs - self.right_panel_offset_x, mouse_y_abs - self.right_panel_offset_y
         )
 
+        # Hotkeys
+        for event in events:
+            if event.type == pygame.KEYUP and event.key == pygame.K_e:
+                self.log.info("Ending turn...")
+                self.end_turn()
+                self.log.info("Turn ended")
+
     def update(self, time_delta: float):
         # Panels
         self.map_panel.update(time_delta)
@@ -99,3 +106,6 @@ class GameScene(Scene):
         # Right panel
         self.right_panel.render(self.right_panel_surface)
         screen.blit(self.right_panel_surface, (self.right_panel_offset_x, self.right_panel_offset_y))
+
+    def end_turn(self):
+        self.game_state.end_turn()

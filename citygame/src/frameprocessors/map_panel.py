@@ -44,11 +44,19 @@ class MapPanel(Panel):
 
         # Process all the events
         for event in events:
-            # Left mouse button released
-            if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
-                # If we have a hero selected and are hovering over a city, tell the hero to move to that location
-                if self.game_state.selected_hero and self.game_state.world.hover_location:
-                    self.game_state.selected_hero.set_destination(self.game_state.world.hover_location)
+            if event.type == pygame.MOUSEBUTTONUP:
+                # Left mouse button released
+                if event.button == pygame.BUTTON_LEFT:
+                    # If we have a hero selected and are hovering over a city, tell the hero to move to that location
+                    if self.game_state.selected_hero and self.game_state.world.hover_location:
+                        self.game_state.selected_hero.set_destination(
+                            self.game_state.world.hover_location, self.game_state.world.locations
+                        )
+                # Right mouse button released
+                if event.button == pygame.BUTTON_RIGHT:
+                    # TODO remove this debug functionality
+                    if self.game_state.world.hover_location:
+                        self.game_state.world.location_conquered(self.game_state.world.hover_location)
 
         # Set the hover status now that we have redrawn everything
         if self.game_state.world.hover_location:
