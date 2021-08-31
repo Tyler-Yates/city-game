@@ -44,12 +44,12 @@ class Hero(Actor):
     def render(self, surface: Surface):
         render_font_center(surface, f"{self.name} Lv. {self.level}", 14, Color("white"))
 
-    def render_path(self, surface: Surface):
+    def render_path(self, surface: Surface, color: Color):
         if self.destination:
             current_location = self.current_location
             for path_location in self.move_path:
                 pygame.draw.line(
-                    surface, Color("red"), (current_location.x, current_location.y), (path_location.x, path_location.y)
+                    surface, color, (current_location.x, current_location.y), (path_location.x, path_location.y)
                 )
                 current_location = path_location
 

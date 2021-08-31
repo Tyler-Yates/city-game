@@ -72,9 +72,13 @@ class MapPanel(Panel):
         # Render roads as we want them to show up below locations
         self.game_state.world.render_roads(self.map_surface)
 
-        # Render hero path if relevant
+        # Render selected hero path if necessary
         if self.game_state.selected_hero:
-            self.game_state.selected_hero.render_path(self.map_surface)
+            self.game_state.selected_hero.render_path(self.map_surface, pygame.Color("red"))
+
+        # Render hover hero path if necessary
+        if self.game_state.hover_hero:
+            self.game_state.hover_hero.render_path(self.map_surface, pygame.Color("yellow"))
 
         # Render the locations above the roads
         self.game_state.world.render_locations(self.map_surface)

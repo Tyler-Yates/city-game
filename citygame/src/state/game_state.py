@@ -18,6 +18,7 @@ class GameState:
 
         self.heroes: List[Hero] = []
         self.selected_hero: Optional[Hero] = None
+        self.hover_hero: Optional[Hero] = None
 
     def set_world(self, world):
         self.world = world

@@ -33,7 +33,7 @@ class HeroPanel(Panel):
         self.log = logging.getLogger(self.__class__.__name__)
         self.mouse_x = None
         self.mouse_y = None
-        self.current_hero_rect: Optional[HeroRect] = None
+        self.hover_hero_rect: Optional[HeroRect] = None
 
         self.hero_rect_height = get_rect_for_lines(
             border=HERO_TEXT_BORDER,
@@ -50,22 +50,24 @@ class HeroPanel(Panel):
         self.mouse_x = mouse_x
         self.mouse_y = mouse_y
 
-        self.current_hero_rect = None
+        self.hover_hero_rect = None
+        self.game_state.hover_hero = None
         for hero_rect in self.hero_rects:
             if hero_rect.rect.collidepoint(mouse_x, mouse_y):
                 hero_rect.hover = True
                 self.game_state.world.hover_location = hero_rect.hero.current_location
-                self.current_hero_rect = hero_rect
+                self.hover_hero_rect = hero_rect
+                self.game_state.hover_hero = self.hover_hero_rect.hero
 
         for event in events:
             # Left mouse button released
             if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
-                if self.current_hero_rect:
-                    if self.game_state.selected_hero == self.current_hero_rect.hero:
+                if self.hover_hero_rect:
+                    if self.game_state.selected_hero == self.hover_hero_rect.hero:
                         # Toggle selection state if we are clicking on the selected hero
                         self.game_state.selected_hero = None
                     else:
-                        self.game_state.selected_hero = self.current_hero_rect.hero
+                        self.game_state.selected_hero = self.hover_hero_rect.hero
 
     def update(self, time_delta: float):
         pass
