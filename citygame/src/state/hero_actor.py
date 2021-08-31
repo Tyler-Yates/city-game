@@ -135,7 +135,8 @@ class Hero(Actor):
             if minimum_distance_location == destination:
                 break
 
-            # Heroes can only move through conquered locations
+            # Heroes can only move through conquered locations bue we should always be able to move from the current
+            # location regardless of its state
             if (
                 minimum_distance_location.location_state == LocationState.CONQUERED
                 or minimum_distance_location == self.current_location
