@@ -79,6 +79,12 @@ class Location:
         # TODO negative consequences for defeat
         pass
 
+    def uncontested(self):
+        self.danger_points = min(self.danger_points + 50, self.initial_danger_points)
+
+        if self.danger_points == self.initial_danger_points:
+            self.world_state.location_regress(self)
+
     def __eq__(self, other):
         if type(other) is type(self):
             return (self.id == other.id) and (self.x == other.x) and (self.y == other.y)

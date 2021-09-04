@@ -48,17 +48,20 @@ class GameState:
                 location_to_heroes[hero.current_location].append(hero)
 
         for location in location_to_heroes:
-            if location.location_state not in {LocationState.EXPLORED, LocationState.DISCOVERED}:
-                continue
-
             heroes = location_to_heroes[location]
             self.battle(location, heroes)
 
     def battle(self, location: Location, heroes: List[Hero]):
-        if len(heroes) == 0:
-            # TODO some negative consequence if location is not contested
+        # Ignore locations that are hidden or already conquered
+        if location.location_state not in {LocationState.EXPLORED, LocationState.DISCOVERED}:
             return
 
+        # If no heroes are present at a location then the location is uncontested and will regress capture
+        if len(heroes) == 0:
+            location.uncontested()
+            return
+
+        # Heroes are present so we have a battle
         if len(heroes) == 1:
             message = f"{len(heroes)} hero is fighting at location {location.name}"
         else:

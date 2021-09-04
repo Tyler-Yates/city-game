@@ -39,6 +39,11 @@ class WorldState:
         self.starting_location.set_as_starting_location()
         self.location_conquered(self.starting_location)
 
+    def location_regress(self, location: Location):
+        self.locations_to_draw.add(location)
+        location.set_location_state(LocationState.DISCOVERED)
+        self._redraw_locations()
+
     def location_explored(self, location: Location):
         self.locations_to_draw.add(location)
         location.set_location_state(LocationState.EXPLORED)
