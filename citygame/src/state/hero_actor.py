@@ -75,6 +75,7 @@ class Hero(Actor):
 
     def set_destination(self, destination: Location, locations: List[Location]):
         if destination == self.current_location:
+            self.destination = None
             return
 
         self.move_path = self._calculate_path_to_destination(destination, locations)
