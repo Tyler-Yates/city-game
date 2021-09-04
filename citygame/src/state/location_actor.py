@@ -23,6 +23,8 @@ class Location:
 
         self.name = f"({x},{y})"
 
+        self.level = 1
+
         self.location_state = LocationState.HIDDEN
         self.starting_location = False
 
@@ -49,6 +51,9 @@ class Location:
 
     def set_name(self, name: str):
         self.name = name
+
+    def set_level(self, level: int):
+        self.level = level
 
     def __eq__(self, other):
         if type(other) is type(self):

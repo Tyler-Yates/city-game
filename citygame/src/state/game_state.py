@@ -73,6 +73,6 @@ class GameState:
 
         os.makedirs(os.path.dirname(save_file_path), exist_ok=True)
 
-        with open(save_file_path, mode='wb') as save_file:
+        with open(save_file_path, mode="wb") as save_file:
             # TODO figure out how to exclude certain traits from pickling
             pickle.dump(self, save_file)

@@ -36,7 +36,6 @@ class WorldState:
         self.location_roads_surface = self.location_roads_surface.convert_alpha()
         self.locations_to_draw: Set[Location] = set()
 
-        self.starting_location = self.locations[0]
         self.starting_location.set_as_starting_location()
         self.location_conquered(self.starting_location)
 
@@ -145,6 +144,11 @@ class WorldState:
             # Now set the neighbors
             current_location.set_neighbors(current_neighbors)
 
+        self.starting_location = self.locations[0]
+
+        # Calculate location levels
+        self._calculate_level(self.starting_location)
+
         progress_bar.set_progress(0.8, "Saving map image...")
         # Create a map surface so that we can simply draw the surface each frame instead of each tile
         self.map_surface = Surface((map_size, map_size))
@@ -154,3 +158,27 @@ class WorldState:
                 pygame.draw.line(self.map_surface, tile_color, [x, y], [x, y])
 
         progress_bar.set_progress(1.0, "Done!")
+
+    @staticmethod
+    def _calculate_level(starting_location: Location):
+        starting_location.set_level(1)
+
+        locations_visited = {starting_location}
+        most_recently_visited = {starting_location}
+        distance = 0
+        while True:
+            newly_visited = set()
+            for location in most_recently_visited:
+                location.set_level(distance)
+                for neighbor in location.neighbors:
+                    # Do not re-visit points
+                    if neighbor in locations_visited:
+                        continue
+
+                    locations_visited.add(neighbor)
+                    newly_visited.add(neighbor)
+
+            distance += 1
+            most_recently_visited = newly_visited
+            if len(most_recently_visited) == 0:
+                return

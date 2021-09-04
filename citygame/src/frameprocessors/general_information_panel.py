@@ -45,7 +45,9 @@ class GeneralInformationPanel(Panel):
 
         hover_location = self.game_state.world.hover_location
         if hover_location:
-            render_font_center_horizontal(surface, hover_location.name, size=32, y=20, color=Color("white"))
+            render_font_center_horizontal(
+                surface, f"{hover_location.name} - Level {hover_location.level}", size=24, y=20, color=Color("white")
+            )
 
         # TODO better handling of too many events
         # Events
