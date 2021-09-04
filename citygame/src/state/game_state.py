@@ -1,6 +1,8 @@
 import logging
+import math
 import os
 import pickle
+import random
 from typing import Optional, List
 
 from citygame.src.constants.location_state_enum import LocationState
@@ -36,14 +38,14 @@ class GameState:
 
     def end_turn(self):
         location_to_heroes = dict()
+        for location in self.world.locations:
+            location_to_heroes[location] = []
 
         for hero in self.heroes:
             hero.end_turn()
 
             if hero.current_location in location_to_heroes:
                 location_to_heroes[hero.current_location].append(hero)
-            else:
-                location_to_heroes[hero.current_location] = [hero]
 
         for location in location_to_heroes:
             if location.location_state not in {LocationState.EXPLORED, LocationState.DISCOVERED}:
@@ -54,6 +56,7 @@ class GameState:
 
     def battle(self, location: Location, heroes: List[Hero]):
         if len(heroes) == 0:
+            # TODO some negative consequence if location is not contested
             return
 
         if len(heroes) == 1:
@@ -62,7 +65,20 @@ class GameState:
             message = f"{len(heroes)} heroes are fighting at location {location.name}"
         self.log_event(message)
 
-        # TODO actual battle logic
+        heroes_strength = sum(math.pow(hero.level, 2) for hero in heroes)
+        enemy_strength = math.pow(location.level, 2)
+
+        heroes_strength_ratio = heroes_strength / (enemy_strength * 1.5)
+        heroes_strength_ratio = max(0.01, heroes_strength_ratio)
+        heroes_strength_ratio = min(0.99, heroes_strength_ratio)
+
+        hero_victory = random.random() < heroes_strength_ratio
+
+        if hero_victory:
+            self.log_event(f"Victory at location {location.name}!")
+            location.victory()
+        else:
+            self.log_event(f"Defeat at location {location.name}!")
 
     def log_event(self, event: str):
         self.events.append(event)

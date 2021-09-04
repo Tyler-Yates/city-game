@@ -1,10 +1,13 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from pygame import gfxdraw, Color
 from pygame.surface import Surface
 
 from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.constants.world_constants import LOCATION_DOT_RADIUS
+
+if TYPE_CHECKING:
+    from citygame.src.state.game_state import WorldState
 
 LOCATION_DOT_OUTLINE_COLOR = Color("yellow")
 LOCATION_DOT_OUTLINE_COLOR_HOVER = Color("purple")
@@ -15,15 +18,18 @@ class Location:
     Representation of a location.
     """
 
-    def __init__(self, location_id: int, x: int, y: int):
+    def __init__(self, location_id: int, x: int, y: int, world_state: "WorldState"):
         super().__init__()
         self.id = location_id
         self.x = x
         self.y = y
+        self.world_state = world_state
 
         self.name = f"({x},{y})"
 
         self.level = 1
+        self.danger_points = 100
+        self.initial_danger_points = self.danger_points
 
         self.location_state = LocationState.HIDDEN
         self.starting_location = False
@@ -52,8 +58,26 @@ class Location:
     def set_name(self, name: str):
         self.name = name
 
+    @staticmethod
+    def _get_danger_level(level: int):
+        return 100 * level + 100
+
     def set_level(self, level: int):
         self.level = level
+        self.danger_points = self._get_danger_level(level)
+        self.initial_danger_points = self.danger_points
+
+    def victory(self):
+        self.danger_points -= 100
+
+        if self.danger_points <= 0:
+            self.world_state.location_conquered(self)
+        elif self.danger_points < self.initial_danger_points:
+            self.world_state.location_explored(self)
+
+    def defeat(self):
+        # TODO negative consequences for defeat
+        pass
 
     def __eq__(self, other):
         if type(other) is type(self):

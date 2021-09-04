@@ -117,7 +117,7 @@ class WorldState:
         self.locations: List[Location] = []
         for i in range(len(location_points)):
             location_coordinates = location_points[i]
-            self.locations.append(Location(i, location_coordinates[0], location_coordinates[1]))
+            self.locations.append(Location(i, location_coordinates[0], location_coordinates[1], self))
 
         # Calculate neighbors for each location
         for i in range(len(self.locations)):

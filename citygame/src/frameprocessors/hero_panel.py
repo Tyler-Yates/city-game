@@ -38,7 +38,7 @@ class HeroPanel(Panel):
         self.hero_rect_height = get_rect_for_lines(
             border=HERO_TEXT_BORDER,
             spacing=HERO_TEXT_SPACING,
-            lines=self._get_hero_information_left(Hero(Location(0, 0, 0), self.game_state)),
+            lines=self._get_hero_information_left(Hero(Location(0, 0, 0, None), self.game_state)),
             size=HERO_TEXT_SIZE,
             font=HERO_TEXT_FONT,
         ).height
