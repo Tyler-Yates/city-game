@@ -86,6 +86,12 @@ class Hero(Actor):
 
         # TODO battles and other logic
 
+    def battle(self):
+        if self.current_location.location_state not in {LocationState.EXPLORED, LocationState.DISCOVERED}:
+            return
+
+        self.game_state.log_event(f"Hero {self.name} ")
+
     def move(self):
         # If the first element in the move path is the current location, get rid of it
         if next(iter(self.move_path), None) == self.current_location:

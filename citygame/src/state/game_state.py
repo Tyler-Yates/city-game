@@ -1,11 +1,17 @@
+import logging
 import os
 import pickle
 from typing import Optional, List
 
+from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.constants.world_constants import DEFAULT_MAP_SIZE
 from citygame.src.state.hero_actor import Hero
+from citygame.src.state.location_actor import Location
 from citygame.src.state.world_state import WorldState
 from citygame.src.util.paths import get_save_file_directory
+
+
+LOG = logging.getLogger("GameState")
 
 
 class GameState:
@@ -29,8 +35,34 @@ class GameState:
         self.__dict__.update(new_game_state.__dict__)
 
     def end_turn(self):
+        location_to_heroes = dict()
+
         for hero in self.heroes:
             hero.end_turn()
+
+            if hero.current_location in location_to_heroes:
+                location_to_heroes[hero.current_location].append(hero)
+            else:
+                location_to_heroes[hero.current_location] = [hero]
+
+        for location in location_to_heroes:
+            if location.location_state not in {LocationState.EXPLORED, LocationState.DISCOVERED}:
+                continue
+
+            heroes = location_to_heroes[location]
+            self.battle(location, heroes)
+
+    def battle(self, location: Location, heroes: List[Hero]):
+        if len(heroes) == 0:
+            return
+
+        if len(heroes) == 1:
+            message = f"{len(heroes)} hero is fighting at location {location.name}"
+        else:
+            message = f"{len(heroes)} heroes are fighting at location {location.name}"
+        self.log_event(message)
+
+        # TODO actual battle logic
 
     def log_event(self, event: str):
         self.events.append(event)
