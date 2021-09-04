@@ -85,6 +85,9 @@ class GameScene(Scene):
                 self.log.info("Ending turn...")
                 self.end_turn()
                 self.log.info("Turn ended")
+            if event.type == pygame.KEYUP and event.key == pygame.K_s:
+                # TODO figure out save naming
+                self.game_state.save("save1")
 
     def update(self, time_delta: float):
         # Panels
