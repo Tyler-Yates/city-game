@@ -1,0 +1,6 @@
+* Heroes are parts of generations. Each hero has up to a certain number of children.
+* Once a hero has a certain number of heroes underneath them, they get promoted to the next rank.
+* The player can view the hero family tree seeing even the heroes that have died.
+
+* The player's total money must go towards funding the heroes that are battling.
+* If the player does not have enough money to fund all heroes then negative consequences arise.
