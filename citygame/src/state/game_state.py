@@ -10,6 +10,7 @@ from citygame.src.constants.world_constants import DEFAULT_MAP_SIZE
 from citygame.src.state.hero_actor import Hero
 from citygame.src.state.location_actor import Location
 from citygame.src.state.world_state import WorldState
+from citygame.src.util.hero_util import get_xp_for_location_victory
 from citygame.src.util.paths import get_save_file_directory
 
 
@@ -81,7 +82,7 @@ class GameState:
             self.log_event(f"Victory at location {location.name}!")
             location.victory()
 
-            xp_gained_per_hero = location.level * 100 // len(heroes)
+            xp_gained_per_hero = get_xp_for_location_victory(location.level) // len(heroes)
             for hero in heroes:
                 hero.battle_victory(xp_gained_per_hero)
         else:
