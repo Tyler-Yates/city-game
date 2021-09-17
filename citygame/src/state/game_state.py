@@ -80,8 +80,14 @@ class GameState:
         if hero_victory:
             self.log_event(f"Victory at location {location.name}!")
             location.victory()
+
+            xp_gained_per_hero = location.level * 100 // len(heroes)
+            for hero in heroes:
+                hero.battle_victory(xp_gained_per_hero)
         else:
             self.log_event(f"Defeat at location {location.name}!")
+            for hero in heroes:
+                hero.battle_defeat()
 
     def log_event(self, event: str):
         self.events.append(event)

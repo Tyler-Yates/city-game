@@ -11,6 +11,7 @@ from citygame.src.constants.location_state_enum import LocationState
 from citygame.src.interfaces.actor import Actor
 from citygame.src.state.location_actor import Location
 from citygame.src.util.fonts import render_font_center
+from citygame.src.util.hero_util import get_level
 
 if TYPE_CHECKING:
     from citygame.src.state.game_state import GameState
@@ -27,10 +28,15 @@ class Hero(Actor):
         self.game_state = game_state
 
         self.id = str(uuid.uuid4())
+
+        self.xp = 0
         self.level = 1
 
         self.hp = 10
         self.max_hp = 10
+
+        self.victories = 0
+        self.defeats = 0
 
         # TODO Hero name generation
         self.name = f"Hero {random.randint(0, 99)}"
@@ -84,6 +90,19 @@ class Hero(Actor):
     def end_turn(self):
         if self.destination:
             self.move()
+
+    def battle_victory(self, xp_gained: int):
+        self.victories += 1
+
+        self.xp += xp_gained
+
+        new_level = get_level(self.xp)
+        if new_level != self.level:
+            self.level = new_level
+            self.game_state.log_event(f"Hero {self.name} levelled up to level {self.level}")
+
+    def battle_defeat(self):
+        self.defeats += 1
 
     def move(self):
         # If the first element in the move path is the current location, get rid of it
